@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "noodlegraph/1/graph",
+  "title": "A noodlegraph graph (noodlegraph/1)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id"
+  ],
+  "properties": {
+    "schema": {
+      "const": "noodlegraph/1"
+    },
+    "id": {
+      "$ref": "#/$defs/id"
+    },
+    "name": {
+      "type": "string",
+      "maxLength": 80,
+      "default": ""
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 400,
+      "default": ""
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Its triggers listen while the engine is active."
+    },
+    "nodes": {
+      "type": "array",
+      "maxItems": 200,
+      "items": {
+        "$ref": "#/$defs/node"
+      },
+      "default": []
+    },
+    "wires": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/wire"
+      },
+      "default": []
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/note"
+      },
+      "default": [],
+      "description": "Words on the canvas, for people. A runtime ignores them."
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]{0,47}$"
+    },
+    "node": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id",
+          "description": "Unique within the graph."
+        },
+        "kind": {
+          "type": "string",
+          "description": "The block type, e.g. wait."
+        },
+        "options": {
+          "type": "object",
+          "default": {},
+          "description": "The settings that differ from the block's defaults."
+        },
+        "position": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Place on the canvas (x, y); a runtime ignores it."
+        }
+      }
+    },
+    "wire": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "from_node",
+        "from_port",
+        "to_node",
+        "to_port"
+      ],
+      "properties": {
+        "from_node": {
+          "type": "string"
+        },
+        "from_port": {
+          "type": "string",
+          "description": "An output of from_node."
+        },
+        "to_node": {
+          "type": "string"
+        },
+        "to_port": {
+          "type": "string",
+          "description": "An input of to_node."
+        }
+      }
+    },
+    "note": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 4000,
+          "default": ""
+        },
+        "position": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "size": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Width and height on the canvas."
+        }
+      }
+    }
+  }
+}

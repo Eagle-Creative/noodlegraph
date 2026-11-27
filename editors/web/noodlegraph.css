@@ -1,0 +1,263 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Noodlegraph-Commercial */
+/* SPDX-FileCopyrightText: 2026 Eagle Creative */
+/*
+ * noodlegraph — the look of the editor (noodlegraph.js). Everything lives under the editor's
+ * root element (class "ng") and carries the prefix "ng-", so it does not meet a host's styles.
+ *
+ * To restyle it, set the --ng-* variables on the root (or any parent): paper / ink neutrals,
+ * an accent, and one colour per value type and block group. Dark follows the system, or
+ * data-theme="dark" / "light" on the root or any parent.
+ */
+.ng {
+  color-scheme: light;
+  --ng-surface: #fffefb;
+  --ng-surface-sunk: #efece3;
+  --ng-ink: #211d17;
+  --ng-ink-soft: #574f43;
+  --ng-ink-faint: #857b6b;
+  --ng-rule: #ddd6c7;
+  --ng-rule-strong: #c8bfab;
+  --ng-accent: #d9591b;
+  --ng-accent-ink: #a83f0d;
+  --ng-cyan: #0f6d75;
+  --ng-danger: #b52a1b;
+  --ng-danger-ink: #8f2013;
+  --ng-good: #4f7a2e;
+  --ng-warn: #9a6a00;
+  --ng-violet: #6b4fa3;
+  --ng-shadow: 0 1px 2px rgba(33, 29, 23, .06), 0 8px 24px -12px rgba(33, 29, 23, .18);
+  --ng-font-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --ng-font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ng-font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  color: var(--ng-ink);
+  font: 15px/1.5 var(--ng-font-body);
+  -webkit-font-smoothing: antialiased;
+}
+@media (prefers-color-scheme: dark) {
+  .ng:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ng-surface: #1d1a15; --ng-surface-sunk: #100e0b; --ng-ink: #ece5d8; --ng-ink-soft: #b4a993; --ng-ink-faint: #857b68;
+    --ng-rule: #322d24; --ng-rule-strong: #443d30; --ng-accent: #f0793c; --ng-accent-ink: #f6a077; --ng-cyan: #3aa7b0;
+    --ng-danger: #e0604e; --ng-danger-ink: #f0917f; --ng-good: #8ab866; --ng-warn: #e0b04a; --ng-violet: #a892dc;
+    --ng-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px -14px rgba(0, 0, 0, .6);
+  }
+}
+[data-theme="light"] .ng:not([data-theme="dark"]) {
+  color-scheme: light;
+  --ng-surface: #fffefb; --ng-surface-sunk: #efece3; --ng-ink: #211d17; --ng-ink-soft: #574f43; --ng-ink-faint: #857b6b;
+  --ng-rule: #ddd6c7; --ng-rule-strong: #c8bfab; --ng-accent: #d9591b; --ng-accent-ink: #a83f0d; --ng-cyan: #0f6d75;
+  --ng-danger: #b52a1b; --ng-danger-ink: #8f2013; --ng-good: #4f7a2e; --ng-warn: #9a6a00; --ng-violet: #6b4fa3;
+  --ng-shadow: 0 1px 2px rgba(33, 29, 23, .06), 0 8px 24px -12px rgba(33, 29, 23, .18);
+}
+.ng[data-theme="dark"], [data-theme="dark"] .ng:not([data-theme="light"]) {
+  color-scheme: dark;
+  --ng-surface: #1d1a15; --ng-surface-sunk: #100e0b; --ng-ink: #ece5d8; --ng-ink-soft: #b4a993; --ng-ink-faint: #857b68;
+  --ng-rule: #322d24; --ng-rule-strong: #443d30; --ng-accent: #f0793c; --ng-accent-ink: #f6a077; --ng-cyan: #3aa7b0;
+  --ng-danger: #e0604e; --ng-danger-ink: #f0917f; --ng-good: #8ab866; --ng-warn: #e0b04a; --ng-violet: #a892dc;
+  --ng-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 30px -14px rgba(0, 0, 0, .6);
+}
+.ng, .ng * { box-sizing: border-box; }
+.ng [hidden] { display: none !important; }
+/* the base look of buttons and inputs: :where() keeps it weaker than every class below */
+:where(.ng) button { font: inherit; cursor: pointer; }
+:where(.ng) button:disabled { opacity: .45; cursor: not-allowed; }
+:where(.ng) :where(button, input, select):focus-visible { outline: 2px solid var(--ng-accent); outline-offset: 2px; }
+:where(.ng) :where(input:not([type="checkbox"]):not([type="color"]), select) {
+  font-family: var(--ng-font-mono); font-size: .82rem; padding: .25rem .35rem; max-width: 100%;
+  background: var(--ng-surface-sunk); color: var(--ng-ink); border: 1px solid var(--ng-rule-strong); border-radius: 3px;
+}
+:where(.ng) :where(input:not([type="checkbox"]):not([type="color"]), select):focus { border-color: var(--ng-accent); outline: none; }
+:where(.ng) :where(input, select):disabled { background: transparent; border-color: transparent; color: var(--ng-ink-soft); }
+.ng-notice { position: absolute; left: 50%; top: .5rem; z-index: 4; transform: translateX(-50%); max-width: calc(100% - 2rem); margin: 0; padding: .3rem .7rem; border: 1px solid var(--ng-danger); border-radius: 4px; background: var(--ng-surface); color: var(--ng-danger-ink); font-size: .85rem; box-shadow: var(--ng-shadow); }
+
+.ng-btn-primary, .ng-btn-quiet {
+  font-family: var(--ng-font-display);
+  font-weight: 600;
+  font-size: .9rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  padding: .35rem .9rem;
+}
+.ng-btn-primary { background: var(--ng-accent); color: #fff; border: 1px solid var(--ng-accent); }
+.ng-btn-primary:hover:not(:disabled) { background: var(--ng-accent-ink); border-color: var(--ng-accent-ink); }
+.ng-btn-quiet { background: transparent; color: var(--ng-ink-soft); border: 1px solid var(--ng-rule-strong); }
+.ng-btn-quiet:hover:not(:disabled) { color: var(--ng-ink); border-color: var(--ng-ink-soft); }
+.ng-btn-small { font-size: .8rem; padding: .15rem .55rem; }
+.ng-zoom-controls { display: inline-flex; align-items: stretch; gap: 2px; }
+.ng-zoom-controls .ng-zoom-btn { min-width: 2.25rem; min-height: 2.25rem; font-variant-numeric: tabular-nums; }
+.ng-zoom-controls .ng-zoom-btn[data-zoom="level"] { min-width: 3.9rem; }
+.ng-zoom-controls .ng-zoom-btn[data-zoom="out"], .ng-zoom-controls .ng-zoom-btn[data-zoom="in"] { font-size: 1.05rem; line-height: 1; }
+@media (pointer: coarse) { .ng-zoom-controls .ng-zoom-btn { min-width: 2.75rem; min-height: 2.75rem; } }
+.ng-field { display: flex; flex-direction: column; gap: .15rem; min-width: 0; max-width: 100%; }
+.ng-field-label { font-size: .8rem; color: var(--ng-ink-faint); }
+.ng-field .ng-req { color: var(--ng-accent); }
+.ng-field input[type="checkbox"] { width: 1.1rem; height: 1.1rem; accent-color: var(--ng-accent); }
+.ng-field-help { font-size: .8rem; color: var(--ng-ink-faint); max-width: 15rem; line-height: 1.3; }
+.ng-mono { font-family: var(--ng-font-mono); font-size: .8rem; }
+.ng-actions { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .5rem 1rem; }
+
+.ng-pal-group { margin: .35rem 0; border: 1px solid var(--ng-rule); border-left-width: 4px; border-radius: 4px; background: var(--ng-surface); }
+.ng-pal-group > summary {
+  display: flex; align-items: center; gap: .5rem; min-height: 2.4rem; padding: .3rem .55rem; cursor: pointer; list-style: none;
+  font-family: var(--ng-font-display); font-size: .8rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--ng-ink-soft);
+}
+.ng-pal-group > summary::-webkit-details-marker { display: none; }
+.ng-pal-group > summary::after { content: "\25B8"; margin-left: auto; font-size: .9rem; transition: transform .15s; }
+.ng-pal-group[open] > summary::after { transform: rotate(90deg); }
+.ng-pal-group > summary:hover, .ng-pal-group > summary:focus-visible { color: var(--ng-ink); outline: none; background: var(--ng-surface-sunk); }
+.ng-pal-count { font-family: var(--ng-font-mono); font-size: .75rem; letter-spacing: 0; color: var(--ng-ink-faint); }
+.ng-pal-group[open] { padding-bottom: .3rem; }
+.ng-pal-group > .ng-pal { width: calc(100% - .7rem); margin: 0 .35rem .2rem; }
+@media (prefers-reduced-motion: reduce) { .ng-pal-group > summary::after { transition: none; } }
+.ng-pal { display: block; width: 100%; text-align: left; margin-bottom: .2rem; padding: .25rem .5rem; border: 1px solid var(--ng-rule); border-left-width: 4px; border-radius: 4px; background: var(--ng-surface); color: var(--ng-ink); font-size: .85rem; cursor: grab; }
+.ng-pal:disabled { opacity: .55; cursor: default; }
+/* the editor spans the page: Blocks is a column on its left that folds to a tab, the settings of
+   the selected block a panel over the right of the canvas */
+.ng {
+  position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); height: 100%; min-height: 18rem;
+  border: 1px solid var(--ng-rule); border-radius: 6px; overflow: hidden; background: var(--ng-surface);
+}
+.ng-canvas { position: relative; height: 100%; overflow: hidden; background: var(--ng-surface-sunk); background-image: radial-gradient(var(--ng-rule) 1px, transparent 1px); background-size: 20px 20px; cursor: grab; touch-action: none; }
+.ng-canvas > .ng-empty { position: absolute; inset: 40% 0 auto; text-align: center; pointer-events: none; }
+.ng-stage { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-origin: 0 0; }
+.ng-zoom { position: absolute; right: .5rem; bottom: .5rem; z-index: 2; padding: 2px; background: var(--ng-surface); border: 1px solid var(--ng-rule-strong); border-radius: 6px; box-shadow: var(--ng-shadow); cursor: default; }
+.ng-wires { position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: visible; }
+.ng-wire { fill: none; stroke-width: 2.5; stroke: var(--ng-ink-soft); pointer-events: none; }
+.ng-wire[data-type] { stroke: var(--ng-type, var(--ng-ink-soft)); }
+/* a list wire: the colour of its items, thicker */
+.ng-wire[data-list] { stroke-width: 5; }
+.ng-wire[data-list].selected { stroke-width: 7; }
+.ng-wire.selected { stroke-width: 4.5; } .ng-wire-pending { stroke-dasharray: 5 4; }
+.ng-wire-hit { fill: none; stroke: transparent; stroke-width: 14; cursor: pointer; pointer-events: stroke; }
+.ng-node { position: absolute; min-width: 11rem; border: 1px solid var(--ng-rule-strong); border-top: 4px solid var(--ng-ink-soft); border-radius: 6px; background: var(--ng-surface); box-shadow: var(--ng-shadow); cursor: move; user-select: none; }
+.ng-node.selected { outline: 2px solid var(--ng-accent); }
+.ng-node[data-running="true"] { box-shadow: 0 0 0 3px var(--ng-accent); }
+.ng-node.stepped { animation: ng-step .7s ease-out; }
+@keyframes ng-step { from { box-shadow: 0 0 0 6px var(--ng-accent); } to { box-shadow: var(--ng-shadow); } }
+/* the colour of a block group: on its blocks, in Blocks and in the suggestions (a host's own group sets --ng-cat inline) */
+[class*="ng-cat-"] { border-top-color: var(--ng-cat); border-left-color: var(--ng-cat); }
+.ng-cat-trigger { --ng-cat: var(--ng-accent); } .ng-cat-action { --ng-cat: var(--ng-cyan); }
+.ng-cat-logic { --ng-cat: var(--ng-warn); } .ng-cat-value { --ng-cat: var(--ng-good); }
+.ng-cat-unknown { --ng-cat: var(--ng-danger); }
+/* the colour of a value type: on its dots and its wires (a host's own type sets --ng-type inline) */
+.ng-type-number, .ng-type-numbers { --ng-type: var(--ng-cyan); } .ng-type-colour, .ng-type-colours { --ng-type: var(--ng-accent); } .ng-type-bool { --ng-type: var(--ng-good); } .ng-type-text, .ng-type-texts { --ng-type: var(--ng-violet); }
+.ng-pal-group.ng-pal-group { border-top-color: var(--ng-rule); }  /* the colour only on the left */
+.ng-node-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .25rem .5rem; font-weight: 600; font-size: .85rem; }
+.ng-node-run { border: 0; background: none; color: var(--ng-accent-ink); cursor: pointer; font-size: .85rem; padding: 0 .2rem; }
+.ng-node-sum { padding: 0 .5rem .25rem; font-size: .8rem; color: var(--ng-ink-faint); max-width: 14rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ng-node-sum:empty { display: none; }
+.ng-node-swatches { display: flex; flex-wrap: wrap; gap: 3px; padding: 0 .5rem .3rem; max-width: 14rem; }
+.ng-node-swatches[hidden] { display: none; }
+.ng-node-swatches span { width: .85rem; height: .85rem; border-radius: 3px; border: 1px solid var(--ng-rule-strong); }
+.ng-row { display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; padding: .12rem 0; font-size: .8rem; }
+.ng-in { display: flex; align-items: center; gap: .3rem; margin-left: -.42rem; }
+.ng-out { display: flex; align-items: center; justify-content: flex-end; gap: .3rem; margin-right: -.42rem; }
+.ng-label.wired { color: var(--ng-ink-faint); font-style: italic; }
+.ng-port { width: .8rem; height: .8rem; border-radius: 50%; border: 2px solid var(--ng-ink-soft); background: var(--ng-surface); cursor: crosshair; flex: none; }
+.ng-port.ng-type-flow { border-radius: 2px; }
+.ng-port { border-color: var(--ng-type, var(--ng-ink-soft)); }
+/* a list dot: a double ring in the colour of its items */
+.ng-port[data-list] { border-style: double; border-width: 4px; }
+
+.ng-port:hover { background: var(--ng-ink-soft); }
+.ng-inspector {
+  position: absolute; top: .5rem; right: .5rem; z-index: 3; width: 19rem; max-width: calc(100% - 1rem); max-height: calc(100% - 4.2rem); overflow-y: auto;
+  border: 1px solid var(--ng-rule-strong); border-radius: 6px; background: var(--ng-surface); box-shadow: var(--ng-shadow); padding: .7rem .8rem; display: flex; flex-direction: column; gap: .5rem;
+}
+.ng-inspector:empty { display: none; }
+.ng-insp-head { display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem; }
+.ng-insp-close { flex: none; margin: -.3rem -.4rem 0 0; padding: .1rem .45rem; border: 0; background: none; color: var(--ng-ink-soft); font-size: 1.3rem; line-height: 1; cursor: pointer; }
+.ng-insp-close:hover, .ng-insp-close:focus-visible { color: var(--ng-ink); }
+.ng-palette { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--ng-rule); background: var(--ng-surface); }
+.ng-palette[data-open="true"] { width: 15rem; }
+.ng-palette[hidden] { display: none; }
+/* folded: a narrow tab with the word running down */
+.ng-palette[data-open="false"] .ng-drawer-toggle { flex: 1; flex-direction: column; justify-content: flex-start; padding: .7rem .4rem; writing-mode: vertical-rl; }
+.ng-palette[data-open="false"] .ng-drawer-arrow { writing-mode: horizontal-tb; }
+.ng-drawer-toggle {
+  flex: none; display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding: .45rem .65rem; border: 0; background: none; cursor: pointer;
+  font-family: var(--ng-font-display); font-size: .85rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--ng-ink);
+}
+.ng-palette[data-open="true"] .ng-drawer-toggle { border-bottom: 1px solid var(--ng-rule); }
+.ng-drawer-toggle:hover, .ng-drawer-toggle:focus-visible { background: var(--ng-surface-sunk); outline: none; }
+.ng-drawer-arrow { color: var(--ng-ink-soft); }
+.ng-drawer-body { overflow-y: auto; padding: .45rem .5rem .5rem; display: flex; flex-direction: column; gap: .3rem; }
+.ng-drawer-body > .ng-help { margin: 0; font-size: .82rem; }
+.ng-drawer-how { margin-top: .3rem; font-size: .82rem; }
+.ng-drawer-how > summary { cursor: pointer; color: var(--ng-ink-soft); }
+.ng-drawer-how p { margin: .35rem 0 0; }
+.ng-inspector h3 { margin: 0; font-family: var(--ng-font-display); letter-spacing: .06em; text-transform: uppercase; font-size: .95rem; }
+.ng-inspector p { margin: 0; }
+.ng-form { display: flex; flex-direction: column; gap: .5rem; }
+.ng-form select, .ng-form input[type="text"], .ng-form input[type="number"] { max-width: 100%; width: 100%; }
+.ng-wired { font-size: .8rem; font-style: italic; color: var(--ng-ink-faint); }
+/* a list setting: one row per item */
+.ng-list { display: flex; flex-direction: column; gap: .25rem; }
+.ng-list-row { display: flex; align-items: center; gap: .3rem; }
+.ng-list-row + .ng-list-row { margin-top: .25rem; }
+.ng-list-no { min-width: 1.3em; text-align: right; font-size: .8rem; color: var(--ng-ink-faint); font-variant-numeric: tabular-nums; }
+.ng-list-row input[type="color"] { width: 2.4rem; height: 1.8rem; padding: 1px; flex: none; }
+.ng-form .ng-list-row input[type="number"], .ng-form .ng-list-row input[type="text"] { width: auto; flex: 1; min-width: 0; }
+.ng-list-hex { flex: 1; font-size: .78rem; color: var(--ng-ink-soft); }
+.ng-list-btn { min-width: 1.8rem; padding-inline: .3rem; }
+.ng-list-foot { display: flex; align-items: center; gap: .5rem; }
+.ng-node-id { color: var(--ng-ink-faint); }
+/* suggestions at an open dot */
+.ng-suggest { position: absolute; z-index: 5; width: 16rem; max-height: min(24rem, calc(100% - 8px)); display: flex; flex-direction: column; border: 1px solid var(--ng-rule-strong); border-radius: 6px; background: var(--ng-surface); box-shadow: var(--ng-shadow); cursor: default; }
+.ng-suggest-head { padding: .45rem .6rem .3rem; font-family: var(--ng-font-display); font-size: .78rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ng-ink-soft); }
+.ng-suggest-find { margin: 0 .5rem .35rem; }
+.ng-suggest-list { overflow-y: auto; padding: 0 .35rem .4rem; }
+.ng-suggest-sec { margin: .35rem .2rem .15rem; font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ng-ink-faint); }
+.ng-suggest-item { display: flex; align-items: baseline; justify-content: space-between; gap: .6rem; width: 100%; margin-bottom: .15rem; padding: .3rem .5rem; text-align: left; border: 1px solid transparent; border-left: 4px solid var(--ng-rule); border-radius: 4px; background: none; color: var(--ng-ink); font-size: .85rem; cursor: pointer; }
+.ng-suggest-item.ng-suggest-item { border-top-color: transparent; }  /* the group colour only on the left */
+.ng-suggest-item[class*="ng-cat-"] { border-left-color: var(--ng-cat); }
+
+.ng-suggest-item:hover, .ng-suggest-item:focus-visible { background: var(--ng-surface-sunk); outline: none; }
+.ng-suggest-item:focus-visible { box-shadow: inset 0 0 0 2px var(--ng-accent); }
+.ng-suggest-item small { color: var(--ng-ink-faint); font-size: .75rem; white-space: nowrap; }
+.ng-suggest-empty { margin: .3rem .2rem; font-size: .85rem; color: var(--ng-ink-faint); }
+@media (pointer: coarse) { .ng-suggest-item { min-height: 2.5rem; align-items: center; } }
+@media (max-width: 600px) { .ng-palette[data-open="true"] { width: 11.5rem; } .ng-inspector { width: calc(100% - 1rem); } }
+
+/* ------------------------------------------------------------------ feel
+   What answers the hand: dots that fit light up, wires and blocks say they can be taken. */
+.ng-tools { position: absolute; left: .5rem; bottom: .5rem; z-index: 2; display: inline-flex; gap: 2px; padding: 2px; background: var(--ng-surface); border: 1px solid var(--ng-rule-strong); border-radius: 6px; box-shadow: var(--ng-shadow); cursor: default; }
+.ng-tool { min-width: 2.25rem; min-height: 2.25rem; font-size: 1.15rem; line-height: 1; }
+.ng-marquee { position: absolute; z-index: 2; border: 1px solid var(--ng-accent); background: color-mix(in srgb, var(--ng-accent) 12%, transparent); border-radius: 2px; pointer-events: none; }
+.ng-node { transition: box-shadow .12s; }
+.ng-node:hover { box-shadow: 0 1px 2px rgba(0, 0, 0, .1), 0 12px 28px -12px rgba(0, 0, 0, .35); }
+.ng-node.selected { outline-offset: 1px; }
+.ng-node:active { cursor: grabbing; }
+.ng-port { transition: transform .1s, opacity .12s, background .1s; }
+.ng-port:hover { transform: scale(1.25); background: var(--ng-type, var(--ng-ink-soft)); }
+.ng-wire { transition: stroke-width .1s; }
+.ng-wire-hit:hover + .ng-wire:not(.selected) { stroke-width: 4; }
+.ng-wire-hit:hover + .ng-wire[data-list]:not(.selected) { stroke-width: 6.5; }
+.ng-wire.selected { stroke: var(--ng-accent); }
+/* while a wire is dragged */
+.ng-wiring .ng-canvas, .ng-wiring .ng-node { cursor: crosshair; }
+.ng-wiring .ng-port:not(.ng-port-fits) { opacity: .28; }
+.ng-wiring .ng-port-fits { transform: scale(1.3); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ng-type, var(--ng-ink-soft)) 28%, transparent); }
+.ng-wiring .ng-port-near { transform: scale(1.6); background: var(--ng-type, var(--ng-ink-soft)); }
+.ng-pal { transition: background .1s, transform .1s; }
+.ng-pal:hover:not(:disabled) { background: var(--ng-surface-sunk); transform: translateX(2px); }
+.ng-pal:active:not(:disabled) { cursor: grabbing; }
+.ng-inspector:not(:empty) { animation: ng-in .14s ease-out; }
+.ng-suggest { animation: ng-in .1s ease-out; }
+@keyframes ng-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.ng-tool-word { font-family: var(--ng-font-display); font-size: .8rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding-inline: .6rem; }
+/* notes: words on the canvas, under the blocks */
+.ng-notes { position: absolute; left: 0; top: 0; }
+.ng-note { position: absolute; display: flex; flex-direction: column; min-width: 7rem; min-height: 3.5rem; resize: both; overflow: hidden; border: 1px solid color-mix(in srgb, var(--ng-warn) 45%, var(--ng-rule)); border-radius: 4px; background: color-mix(in srgb, var(--ng-warn) 13%, var(--ng-surface)); box-shadow: 0 1px 2px rgba(0, 0, 0, .08); }
+.ng-note-bar { flex: none; display: flex; justify-content: flex-end; height: 1.05rem; background: color-mix(in srgb, var(--ng-warn) 22%, var(--ng-surface)); cursor: move; }
+.ng-note-remove { border: 0; background: none; padding: 0 .35rem; line-height: 1; font-size: .95rem; color: var(--ng-ink-soft); opacity: 0; }
+.ng-note:hover .ng-note-remove, .ng-note-remove:focus-visible { opacity: 1; }
+:where(.ng) textarea.ng-note-text { flex: 1; width: 100%; min-height: 0; resize: none; border: 0; outline: none; padding: .35rem .5rem; background: transparent; color: var(--ng-ink); font: inherit; font-size: .88rem; line-height: 1.4; cursor: text; }
+.ng-name { display: block; }
+.ng-form .ng-name input { width: 100%; }
+@media (pointer: coarse) { .ng-tool { min-width: 2.75rem; min-height: 2.75rem; } .ng-note-remove { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .ng-node, .ng-port, .ng-wire, .ng-pal { transition: none; }
+  .ng-inspector:not(:empty), .ng-suggest, .ng-node.stepped { animation: none; }
+}

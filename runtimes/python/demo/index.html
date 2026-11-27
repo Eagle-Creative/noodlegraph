@@ -1,0 +1,50 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Noodlegraph-Commercial -->
+<!-- SPDX-FileCopyrightText: 2026 Eagle Creative -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>noodlegraph demo (Python runtime)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500&amp;display=swap">
+  <link rel="icon" type="image/svg+xml" href="../../../assets/mark.svg">
+  <link rel="stylesheet" href="../../../editors/web/noodlegraph.css">
+  <link rel="stylesheet" href="demo.css">
+</head>
+<body>
+  <header class="bar">
+    <div class="brand"><span class="brand-name">noodlegraph</span><span class="brand-sub">demo · Python runtime</span></div>
+    <input type="text" id="name" aria-label="Graph name" size="18">
+    <button type="button" class="ng-btn-primary ng-btn-small" id="save">Save</button>
+    <button type="button" class="ng-btn-quiet ng-btn-small" id="export">Export</button>
+    <label class="ng-btn-quiet ng-btn-small file">Import<input type="file" id="import" accept=".json,application/json" hidden></label>
+    <span class="notice" id="notice" role="status"></span>
+    <button type="button" class="active" id="active" role="switch" aria-checked="false" title="Active: triggers listen and chains run. Off: everything stops.">Active</button>
+  </header>
+  <p class="offline" id="offline" hidden>Editing only: the demo server is not running, so graphs cannot be saved or run. Start it with <code>python runtimes/python/demo/server.py</code> and open <code>http://localhost:8765</code>.</p>
+  <ul class="problems" id="problems"></ul>
+  <main>
+    <div id="editor"></div>
+    <aside class="stage" aria-label="Stage">
+      <h2>Stage</h2>
+      <p class="stage-help">What the demo's own blocks work on.</p>
+      <div class="lamps">
+        <figure><span class="lamp" id="lamp-left"></span><figcaption>Left lamp</figcaption></figure>
+        <figure><span class="lamp" id="lamp-right"></span><figcaption>Right lamp</figcaption></figure>
+      </div>
+      <svg class="dial" viewBox="0 0 200 116" role="img" aria-label="Pointer">
+        <path d="M 14 104 A 86 86 0 0 1 186 104" class="dial-arc"/>
+        <g id="pointer" class="dial-hand"><line x1="100" y1="104" x2="22" y2="104"/></g>
+        <circle cx="100" cy="104" r="6" class="dial-hub"/>
+      </svg>
+      <p class="line" id="line" aria-live="polite"></p>
+      <button type="button" class="ng-btn-primary" id="button">Button</button>
+      <label class="slider">Slider <output id="slider-value">50</output><input type="range" id="slider" min="0" max="100" value="50"></label>
+      <p class="last" id="last"></p>
+    </aside>
+  </main>
+  <script type="module" src="demo.js"></script>
+</body>
+</html>

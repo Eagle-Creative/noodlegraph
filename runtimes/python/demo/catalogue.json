@@ -1,0 +1,1266 @@
+[
+ {
+  "kind": "manual",
+  "title": "Run button",
+  "category": "trigger",
+  "help": "Starts when you press Run on this block. For testing and for manual cues.",
+  "inputs": [],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "cooldown_s",
+    "label": "Cooldown (s)",
+    "kind": "float",
+    "min": 0,
+    "max": 86400,
+    "default": 0.0,
+    "help": "Do not start again for this long."
+   },
+   {
+    "name": "when_running",
+    "label": "If still running",
+    "kind": "select",
+    "options": [
+     "ignore",
+     "restart"
+    ],
+    "default": "ignore",
+    "help": "If its chain is still running when it fires again."
+   }
+  ]
+ },
+ {
+  "kind": "start",
+  "title": "When started",
+  "category": "trigger",
+  "help": "Starts once when the engine is activated (or this graph is switched on).",
+  "inputs": [],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "cooldown_s",
+    "label": "Cooldown (s)",
+    "kind": "float",
+    "min": 0,
+    "max": 86400,
+    "default": 0.0,
+    "help": "Do not start again for this long."
+   },
+   {
+    "name": "when_running",
+    "label": "If still running",
+    "kind": "select",
+    "options": [
+     "ignore",
+     "restart"
+    ],
+    "default": "ignore",
+    "help": "If its chain is still running when it fires again."
+   },
+   {
+    "name": "delay_s",
+    "label": "Delay (s)",
+    "kind": "float",
+    "min": 0,
+    "max": 3600,
+    "default": 0.0,
+    "help": "Wait this long first."
+   }
+  ]
+ },
+ {
+  "kind": "interval",
+  "title": "Every interval",
+  "category": "trigger",
+  "help": "Starts again and again, with this time between starts.",
+  "inputs": [],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "cooldown_s",
+    "label": "Cooldown (s)",
+    "kind": "float",
+    "min": 0,
+    "max": 86400,
+    "default": 0.0,
+    "help": "Do not start again for this long."
+   },
+   {
+    "name": "when_running",
+    "label": "If still running",
+    "kind": "select",
+    "options": [
+     "ignore",
+     "restart"
+    ],
+    "default": "ignore",
+    "help": "If its chain is still running when it fires again."
+   },
+   {
+    "name": "every_s",
+    "label": "Every (s)",
+    "kind": "float",
+    "min": 0.2,
+    "max": 86400,
+    "default": 10.0,
+    "help": "Seconds between."
+   },
+   {
+    "name": "first_now",
+    "label": "First now",
+    "kind": "bool",
+    "default": true,
+    "help": "Also start right away."
+   }
+  ]
+ },
+ {
+  "kind": "time_of_day",
+  "title": "At a time of day",
+  "category": "trigger",
+  "help": "Starts at this time, every day, by the clock of the host computer.",
+  "inputs": [],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "cooldown_s",
+    "label": "Cooldown (s)",
+    "kind": "float",
+    "min": 0,
+    "max": 86400,
+    "default": 0.0,
+    "help": "Do not start again for this long."
+   },
+   {
+    "name": "when_running",
+    "label": "If still running",
+    "kind": "select",
+    "options": [
+     "ignore",
+     "restart"
+    ],
+    "default": "ignore",
+    "help": "If its chain is still running when it fires again."
+   },
+   {
+    "name": "time",
+    "label": "Time",
+    "kind": "time",
+    "default": "18:00",
+    "help": "HH:MM"
+   }
+  ]
+ },
+ {
+  "kind": "called",
+  "title": "When run by another graph",
+  "category": "trigger",
+  "help": "Starts when a 'Run graph' block of another graph runs this graph. A graph has at most one of these.",
+  "inputs": [],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "cooldown_s",
+    "label": "Cooldown (s)",
+    "kind": "float",
+    "min": 0,
+    "max": 86400,
+    "default": 0.0,
+    "help": "Do not start again for this long."
+   },
+   {
+    "name": "when_running",
+    "label": "If still running",
+    "kind": "select",
+    "options": [
+     "ignore",
+     "restart"
+    ],
+    "default": "ignore",
+    "help": "If its chain is still running when it fires again."
+   }
+  ]
+ },
+ {
+  "kind": "wait",
+  "title": "Wait",
+  "category": "action",
+  "help": "Pauses the chain.",
+  "inputs": [
+   {
+    "name": "in",
+    "type": "flow",
+    "label": "in"
+   },
+   {
+    "name": "seconds",
+    "type": "number",
+    "label": "seconds"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "seconds",
+    "label": "Seconds",
+    "kind": "float",
+    "min": 0,
+    "max": 3600.0,
+    "default": 1.0
+   }
+  ]
+ },
+ {
+  "kind": "call",
+  "title": "Run graph",
+  "category": "action",
+  "help": "Runs another graph from its 'When run by another graph' block, waits until it is done, then continues. Build a sequence once and use it in several places.",
+  "inputs": [
+   {
+    "name": "in",
+    "type": "flow",
+    "label": "in"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "graph",
+    "label": "Graph",
+    "kind": "graph",
+    "required": true,
+    "help": "Which graph to run."
+   }
+  ]
+ },
+ {
+  "kind": "set_number",
+  "title": "Set number",
+  "category": "action",
+  "help": "Stores a number in a variable.",
+  "inputs": [
+   {
+    "name": "in",
+    "type": "flow",
+    "label": "in"
+   },
+   {
+    "name": "value",
+    "type": "number",
+    "label": "value"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "name",
+    "label": "Name",
+    "kind": "variable",
+    "default": "x",
+    "help": "Which variable. Blocks with the same name share it."
+   },
+   {
+    "name": "value",
+    "label": "Value",
+    "kind": "float",
+    "default": 0.0
+   }
+  ]
+ },
+ {
+  "kind": "change_number",
+  "title": "Change number",
+  "category": "action",
+  "help": "Adds to the number in a variable (a negative number takes away). Counts things.",
+  "inputs": [
+   {
+    "name": "in",
+    "type": "flow",
+    "label": "in"
+   },
+   {
+    "name": "by",
+    "type": "number",
+    "label": "by"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "name",
+    "label": "Name",
+    "kind": "variable",
+    "default": "x",
+    "help": "Which variable. Blocks with the same name share it."
+   },
+   {
+    "name": "by",
+    "label": "By",
+    "kind": "float",
+    "default": 1.0
+   }
+  ]
+ },
+ {
+  "kind": "set_text",
+  "title": "Set text",
+  "category": "action",
+  "help": "Stores a text in a variable.",
+  "inputs": [
+   {
+    "name": "in",
+    "type": "flow",
+    "label": "in"
+   },
+   {
+    "name": "value",
+    "type": "text",
+    "label": "value"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "name",
+    "label": "Name",
+    "kind": "variable",
+    "default": "x",
+    "help": "Which variable. Blocks with the same name share it."
+   },
+   {
+    "name": "value",
+    "label": "Value",
+    "kind": "text",
+    "default": ""
+   }
+  ]
+ },
+ {
+  "kind": "set_bool",
+  "title": "Set yes / no",
+  "category": "action",
+  "help": "Stores yes or no in a variable.",
+  "inputs": [
+   {
+    "name": "in",
+    "type": "flow",
+    "label": "in"
+   },
+   {
+    "name": "value",
+    "type": "bool",
+    "label": "value"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "name",
+    "label": "Name",
+    "kind": "variable",
+    "default": "x",
+    "help": "Which variable. Blocks with the same name share it."
+   },
+   {
+    "name": "value",
+    "label": "Value",
+    "kind": "bool",
+    "default": true
+   }
+  ]
+ },
+ {
+  "kind": "set_colour",
+  "title": "Set colour",
+  "category": "action",
+  "help": "Stores a colour in a variable.",
+  "inputs": [
+   {
+    "name": "in",
+    "type": "flow",
+    "label": "in"
+   },
+   {
+    "name": "value",
+    "type": "colour",
+    "label": "value"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "name",
+    "label": "Name",
+    "kind": "variable",
+    "default": "x",
+    "help": "Which variable. Blocks with the same name share it."
+   },
+   {
+    "name": "value",
+    "label": "Value",
+    "kind": "colour",
+    "default": "#ff8800"
+   }
+  ]
+ },
+ {
+  "kind": "branch",
+  "title": "If",
+  "category": "logic",
+  "help": "Continues on 'then' if the condition is true, otherwise on 'else'.",
+  "inputs": [
+   {
+    "name": "in",
+    "type": "flow",
+    "label": "in"
+   },
+   {
+    "name": "condition",
+    "type": "bool",
+    "label": "condition"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "then",
+    "type": "flow",
+    "label": "then"
+   },
+   {
+    "name": "else",
+    "type": "flow",
+    "label": "else"
+   }
+  ],
+  "fields": [
+   {
+    "name": "condition",
+    "label": "Condition",
+    "kind": "bool",
+    "default": true
+   }
+  ]
+ },
+ {
+  "kind": "for",
+  "title": "For",
+  "category": "logic",
+  "help": "Counts i from 'from' to 'to' (both included) in steps of 'step' and runs the blocks on 'each round' once for every i, then continues on 'done'. Wire i into a setting (a brightness, a position, a hue; Map range scales it). If 'from' is larger than 'to' it counts down. Put a Wait in the round to set its pace.",
+  "inputs": [
+   {
+    "name": "in",
+    "type": "flow",
+    "label": "in"
+   },
+   {
+    "name": "start",
+    "type": "number",
+    "label": "from"
+   },
+   {
+    "name": "end",
+    "type": "number",
+    "label": "to"
+   },
+   {
+    "name": "step",
+    "type": "number",
+    "label": "step"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "each",
+    "type": "flow",
+    "label": "each round"
+   },
+   {
+    "name": "done",
+    "type": "flow",
+    "label": "done"
+   },
+   {
+    "name": "i",
+    "type": "number",
+    "label": "i"
+   }
+  ],
+  "fields": [
+   {
+    "name": "start",
+    "label": "From",
+    "kind": "float",
+    "default": 1,
+    "help": "The first i."
+   },
+   {
+    "name": "end",
+    "label": "To",
+    "kind": "float",
+    "default": 5,
+    "help": "The last i (included)."
+   },
+   {
+    "name": "step",
+    "label": "Step",
+    "kind": "float",
+    "above": 0,
+    "default": 1,
+    "help": "How much i changes each round."
+   }
+  ]
+ },
+ {
+  "kind": "while",
+  "title": "While",
+  "category": "logic",
+  "help": "Runs the blocks on 'each round' again and again while the condition is true (checked before every round), then continues on 'done'. With nothing wired and the condition ticked it runs for ever (until the engine is deactivated). 'round' counts 1, 2, 3 and can be wired into a setting. Put a Wait in the round to set its pace.",
+  "inputs": [
+   {
+    "name": "in",
+    "type": "flow",
+    "label": "in"
+   },
+   {
+    "name": "condition",
+    "type": "bool",
+    "label": "condition"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "each",
+    "type": "flow",
+    "label": "each round"
+   },
+   {
+    "name": "done",
+    "type": "flow",
+    "label": "done"
+   },
+   {
+    "name": "round",
+    "type": "number",
+    "label": "round"
+   }
+  ],
+  "fields": [
+   {
+    "name": "condition",
+    "label": "Condition",
+    "kind": "bool",
+    "default": true,
+    "help": "Wire a condition here (Compare)."
+   }
+  ]
+ },
+ {
+  "kind": "number",
+  "title": "Number",
+  "category": "value",
+  "help": "",
+  "inputs": [],
+  "outputs": [
+   {
+    "name": "value",
+    "type": "number",
+    "label": "value"
+   }
+  ],
+  "fields": [
+   {
+    "name": "value",
+    "label": "Value",
+    "kind": "float",
+    "default": 0.0
+   }
+  ]
+ },
+ {
+  "kind": "number_list",
+  "title": "Number list",
+  "category": "value",
+  "help": "Numbers in order: positions to step through, brightness levels, waiting times. 'item' is the one at 'no.' (1 = the first; past the last it starts again), so a For's i goes through them; 'count' is how many there are (wire it into a For's 'to').",
+  "inputs": [
+   {
+    "name": "index",
+    "type": "number",
+    "label": "no."
+   }
+  ],
+  "outputs": [
+   {
+    "name": "list",
+    "type": "numbers",
+    "label": "list"
+   },
+   {
+    "name": "item",
+    "type": "number",
+    "label": "item"
+   },
+   {
+    "name": "count",
+    "type": "number",
+    "label": "count"
+   }
+  ],
+  "fields": [
+   {
+    "name": "values",
+    "label": "Values",
+    "kind": "numbers",
+    "default": [
+     0.0,
+     50.0,
+     100.0
+    ],
+    "min_items": 1,
+    "max_items": 64
+   },
+   {
+    "name": "index",
+    "label": "No.",
+    "kind": "float",
+    "default": 1,
+    "help": "Which one 'item' is; 1 = the first."
+   }
+  ]
+ },
+ {
+  "kind": "text",
+  "title": "Text",
+  "category": "value",
+  "help": "",
+  "inputs": [],
+  "outputs": [
+   {
+    "name": "value",
+    "type": "text",
+    "label": "value"
+   }
+  ],
+  "fields": [
+   {
+    "name": "value",
+    "label": "Value",
+    "kind": "text",
+    "default": ""
+   }
+  ]
+ },
+ {
+  "kind": "text_list",
+  "title": "Text list",
+  "category": "value",
+  "help": "Texts in order: lines to say, names to go through. 'item' is the one at 'no.' (1 = the first; past the last it starts again), so a For's i goes through them; 'count' is how many there are (wire it into a For's 'to').",
+  "inputs": [
+   {
+    "name": "index",
+    "type": "number",
+    "label": "no."
+   }
+  ],
+  "outputs": [
+   {
+    "name": "list",
+    "type": "texts",
+    "label": "list"
+   },
+   {
+    "name": "item",
+    "type": "text",
+    "label": "item"
+   },
+   {
+    "name": "count",
+    "type": "number",
+    "label": "count"
+   }
+  ],
+  "fields": [
+   {
+    "name": "texts",
+    "label": "Texts",
+    "kind": "texts",
+    "default": [
+     "one",
+     "two",
+     "three"
+    ],
+    "min_items": 1,
+    "max_items": 64
+   },
+   {
+    "name": "index",
+    "label": "No.",
+    "kind": "float",
+    "default": 1,
+    "help": "Which one 'item' is; 1 = the first."
+   }
+  ]
+ },
+ {
+  "kind": "colour_list",
+  "title": "Colour list",
+  "category": "value",
+  "help": "Colours in order. 'list' feeds a setting that takes several colours; 'item' is the one at 'no.' (1 = the first; past the last it starts again), so a For's i goes through them; 'count' is how many there are (wire it into a For's 'to').",
+  "inputs": [
+   {
+    "name": "index",
+    "type": "number",
+    "label": "no."
+   }
+  ],
+  "outputs": [
+   {
+    "name": "list",
+    "type": "colours",
+    "label": "list"
+   },
+   {
+    "name": "item",
+    "type": "colour",
+    "label": "item"
+   },
+   {
+    "name": "count",
+    "type": "number",
+    "label": "count"
+   }
+  ],
+  "fields": [
+   {
+    "name": "colours",
+    "label": "Colours",
+    "kind": "colours",
+    "default": [
+     "#ff0000",
+     "#00ff00",
+     "#0000ff"
+    ],
+    "min_items": 1,
+    "max_items": 64
+   },
+   {
+    "name": "index",
+    "label": "No.",
+    "kind": "float",
+    "default": 1,
+    "help": "Which one 'item' is; 1 = the first."
+   }
+  ]
+ },
+ {
+  "kind": "map_range",
+  "title": "Map range",
+  "category": "value",
+  "help": "Scales a number: in min..in max becomes out min..out max.",
+  "inputs": [
+   {
+    "name": "value",
+    "type": "number",
+    "label": "value"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "result",
+    "type": "number",
+    "label": "result"
+   }
+  ],
+  "fields": [
+   {
+    "name": "value",
+    "label": "Value",
+    "kind": "float",
+    "default": 0.0
+   },
+   {
+    "name": "in_min",
+    "label": "In min",
+    "kind": "float",
+    "default": 0.0
+   },
+   {
+    "name": "in_max",
+    "label": "In max",
+    "kind": "float",
+    "default": 1.0
+   },
+   {
+    "name": "out_min",
+    "label": "Out min",
+    "kind": "float",
+    "default": 0.0
+   },
+   {
+    "name": "out_max",
+    "label": "Out max",
+    "kind": "float",
+    "default": 100.0
+   },
+   {
+    "name": "clamp",
+    "label": "Clamp",
+    "kind": "bool",
+    "default": true
+   }
+  ]
+ },
+ {
+  "kind": "compare",
+  "title": "Compare",
+  "category": "value",
+  "help": "",
+  "inputs": [
+   {
+    "name": "a",
+    "type": "number",
+    "label": "a"
+   },
+   {
+    "name": "b",
+    "type": "number",
+    "label": "b"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "result",
+    "type": "bool",
+    "label": "result"
+   }
+  ],
+  "fields": [
+   {
+    "name": "a",
+    "label": "A",
+    "kind": "float",
+    "default": 0.0
+   },
+   {
+    "name": "op",
+    "label": "Op",
+    "kind": "select",
+    "options": [
+     ">",
+     "<",
+     ">=",
+     "<=",
+     "="
+    ],
+    "default": ">"
+   },
+   {
+    "name": "b",
+    "label": "B",
+    "kind": "float",
+    "default": 0.0
+   }
+  ]
+ },
+ {
+  "kind": "colour_hue",
+  "title": "Colour from hue",
+  "category": "value",
+  "help": "Hue 0-360 (0 red, 120 green, 240 blue) and brightness 0-100 make a colour.",
+  "inputs": [
+   {
+    "name": "hue",
+    "type": "number",
+    "label": "hue"
+   },
+   {
+    "name": "brightness",
+    "type": "number",
+    "label": "brightness"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "colour",
+    "type": "colour",
+    "label": "colour"
+   }
+  ],
+  "fields": [
+   {
+    "name": "hue",
+    "label": "Hue",
+    "kind": "float",
+    "default": 0.0
+   },
+   {
+    "name": "brightness",
+    "label": "Brightness",
+    "kind": "float",
+    "min": 0,
+    "max": 100,
+    "default": 50.0
+   }
+  ]
+ },
+ {
+  "kind": "random",
+  "title": "Random",
+  "category": "value",
+  "help": "",
+  "inputs": [],
+  "outputs": [
+   {
+    "name": "value",
+    "type": "number",
+    "label": "value"
+   }
+  ],
+  "fields": [
+   {
+    "name": "min",
+    "label": "Min",
+    "kind": "float",
+    "default": 0.0
+   },
+   {
+    "name": "max",
+    "label": "Max",
+    "kind": "float",
+    "default": 100.0
+   }
+  ]
+ },
+ {
+  "kind": "get_number",
+  "title": "Number variable",
+  "category": "value",
+  "help": "The number stored in a variable; 0 if nothing was stored yet.",
+  "inputs": [],
+  "outputs": [
+   {
+    "name": "value",
+    "type": "number",
+    "label": "value"
+   }
+  ],
+  "fields": [
+   {
+    "name": "name",
+    "label": "Name",
+    "kind": "variable",
+    "default": "x",
+    "help": "Which variable. Blocks with the same name share it."
+   }
+  ]
+ },
+ {
+  "kind": "get_text",
+  "title": "Text variable",
+  "category": "value",
+  "help": "The text stored in a variable; empty if nothing was stored yet.",
+  "inputs": [],
+  "outputs": [
+   {
+    "name": "value",
+    "type": "text",
+    "label": "value"
+   }
+  ],
+  "fields": [
+   {
+    "name": "name",
+    "label": "Name",
+    "kind": "variable",
+    "default": "x",
+    "help": "Which variable. Blocks with the same name share it."
+   }
+  ]
+ },
+ {
+  "kind": "get_bool",
+  "title": "Yes / no variable",
+  "category": "value",
+  "help": "The yes or no stored in a variable; no if nothing was stored yet.",
+  "inputs": [],
+  "outputs": [
+   {
+    "name": "value",
+    "type": "bool",
+    "label": "value"
+   }
+  ],
+  "fields": [
+   {
+    "name": "name",
+    "label": "Name",
+    "kind": "variable",
+    "default": "x",
+    "help": "Which variable. Blocks with the same name share it."
+   }
+  ]
+ },
+ {
+  "kind": "get_colour",
+  "title": "Colour variable",
+  "category": "value",
+  "help": "The colour stored in a variable; black if nothing was stored yet.",
+  "inputs": [],
+  "outputs": [
+   {
+    "name": "value",
+    "type": "colour",
+    "label": "value"
+   }
+  ],
+  "fields": [
+   {
+    "name": "name",
+    "label": "Name",
+    "kind": "variable",
+    "default": "x",
+    "help": "Which variable. Blocks with the same name share it."
+   }
+  ]
+ },
+ {
+  "kind": "button",
+  "title": "When the button is pressed",
+  "category": "trigger",
+  "help": "Starts when you press the button on the stage.",
+  "inputs": [],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "cooldown_s",
+    "label": "Cooldown (s)",
+    "kind": "float",
+    "min": 0,
+    "max": 86400,
+    "default": 0.0,
+    "help": "Do not start again for this long."
+   },
+   {
+    "name": "when_running",
+    "label": "If still running",
+    "kind": "select",
+    "options": [
+     "ignore",
+     "restart"
+    ],
+    "default": "ignore",
+    "help": "If its chain is still running when it fires again."
+   }
+  ]
+ },
+ {
+  "kind": "set_lamp",
+  "title": "Set lamp",
+  "category": "action",
+  "help": "Gives a lamp a colour. Black is off.",
+  "inputs": [
+   {
+    "name": "in",
+    "type": "flow",
+    "label": "in"
+   },
+   {
+    "name": "colour",
+    "type": "colour",
+    "label": "colour"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "lamp",
+    "label": "Lamp",
+    "kind": "lamp",
+    "required": true,
+    "help": "Which lamp."
+   },
+   {
+    "name": "colour",
+    "label": "Colour",
+    "kind": "colour",
+    "default": "#ff8800"
+   }
+  ]
+ },
+ {
+  "kind": "move_pointer",
+  "title": "Move pointer",
+  "category": "action",
+  "help": "Turns the pointer to an angle (0 to 180) and waits until it is there.",
+  "inputs": [
+   {
+    "name": "in",
+    "type": "flow",
+    "label": "in"
+   },
+   {
+    "name": "angle",
+    "type": "number",
+    "label": "angle"
+   },
+   {
+    "name": "seconds",
+    "type": "number",
+    "label": "seconds"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "angle",
+    "label": "Angle",
+    "kind": "float",
+    "min": 0,
+    "max": 180,
+    "default": 90.0
+   },
+   {
+    "name": "seconds",
+    "label": "Seconds",
+    "kind": "float",
+    "min": 0,
+    "max": 60,
+    "default": 0.5,
+    "help": "How long the move takes."
+   }
+  ]
+ },
+ {
+  "kind": "say",
+  "title": "Say",
+  "category": "action",
+  "help": "Shows a line of text on the stage.",
+  "inputs": [
+   {
+    "name": "in",
+    "type": "flow",
+    "label": "in"
+   }
+  ],
+  "outputs": [
+   {
+    "name": "out",
+    "type": "flow",
+    "label": "then"
+   }
+  ],
+  "fields": [
+   {
+    "name": "text",
+    "label": "Text",
+    "kind": "text",
+    "max_length": 80,
+    "default": "Hello"
+   }
+  ]
+ },
+ {
+  "kind": "slider",
+  "title": "Slider",
+  "category": "value",
+  "help": "Where the slider on the stage stands, 0 to 100.",
+  "inputs": [],
+  "outputs": [
+   {
+    "name": "value",
+    "type": "number",
+    "label": "value"
+   }
+  ],
+  "fields": []
+ }
+]

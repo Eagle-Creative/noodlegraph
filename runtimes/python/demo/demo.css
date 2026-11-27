@@ -1,0 +1,60 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Noodlegraph-Commercial */
+/* SPDX-FileCopyrightText: 2026 Eagle Creative */
+/* The demo page around the editor: a bar, the editor, and a small stage. */
+:root {
+  color-scheme: light dark;
+  --paper: #f6f4ef; --surface: #fffefb; --ink: #211d17; --ink-soft: #574f43; --ink-faint: #857b6b; --rule: #ddd6c7;
+  --accent: #d9591b; --danger-ink: #8f2013; --bar: #1c1813; --bar-ink: #ded6c8;
+  --font-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --paper: #14120f; --surface: #1d1a15; --ink: #ece5d8; --ink-soft: #b4a993; --ink-faint: #857b68; --rule: #322d24; --accent: #f0793c; --danger-ink: #f0917f; --bar: #0c0a08; }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; display: flex; flex-direction: column; background: var(--paper); color: var(--ink); font: 15px/1.5 var(--font-body); }
+[hidden] { display: none !important; }
+button { font: inherit; cursor: pointer; }
+
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .6rem; padding: .5rem .9rem; background: var(--bar); color: var(--bar-ink); }
+.brand { display: flex; align-items: baseline; gap: .45rem; margin-right: .6rem; font-family: var(--font-display); text-transform: uppercase; letter-spacing: .08em; }
+.brand-name { font-size: 1.3rem; font-weight: 700; }
+.brand-sub { font-size: .85rem; opacity: .7; }
+.bar input[type="text"] { font: inherit; padding: .2rem .45rem; border: 1px solid rgba(255, 255, 255, .2); border-radius: 3px; background: rgba(255, 255, 255, .08); color: var(--bar-ink); }
+/* the editor's buttons, used in the dark bar */
+.bar .ng-btn-primary, .bar .ng-btn-quiet, .stage .ng-btn-primary { font-family: var(--font-display); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; border-radius: 4px; }
+.bar .ng-btn-primary, .stage .ng-btn-primary { background: var(--accent); border: 1px solid var(--accent); color: #fff; }
+.bar .ng-btn-quiet { background: transparent; border: 1px solid rgba(255, 255, 255, .25); color: var(--bar-ink); }
+.bar .ng-btn-small { font-size: .8rem; padding: .15rem .55rem; }
+.file { cursor: pointer; }
+.notice { font-size: .85rem; opacity: .9; }
+.notice.bad { color: #f0917f; }
+.active { margin-left: auto; display: inline-flex; align-items: center; gap: .5rem; padding: .3rem .7rem; border: 1px solid rgba(255, 255, 255, .25); border-radius: 4px; background: transparent; color: var(--bar-ink); font-family: var(--font-display); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.active::before { content: ""; width: 1.7rem; height: .95rem; border-radius: 1rem; background: radial-gradient(circle at .47rem 50%, var(--bar-ink) 0 .33rem, transparent .36rem), rgba(255, 255, 255, .14); }
+.active[aria-checked="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.active[aria-checked="true"]::before { background: radial-gradient(circle at 1.23rem 50%, #fff 0 .33rem, transparent .36rem), rgba(255, 255, 255, .3); }
+.offline { margin: 0; padding: .45rem .9rem; background: #f6ecd2; color: #5c4200; font-size: .9rem; }
+.problems { margin: 0; padding: .4rem .9rem .4rem 2.2rem; color: var(--danger-ink); font-size: .88rem; }
+.problems:empty { display: none; }
+
+main { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 15rem; gap: .8rem; padding: .8rem; }
+#editor { min-height: 0; }
+.stage { display: flex; flex-direction: column; gap: .7rem; padding: .8rem; border: 1px solid var(--rule); border-radius: 6px; background: var(--surface); overflow-y: auto; }
+.stage h2 { margin: 0; font-family: var(--font-display); font-size: 1rem; letter-spacing: .08em; text-transform: uppercase; }
+.stage-help { margin: -.5rem 0 0; font-size: .82rem; color: var(--ink-faint); }
+.lamps { display: flex; justify-content: space-around; }
+.lamps figure { margin: 0; display: grid; justify-items: center; gap: .3rem; font-size: .8rem; color: var(--ink-soft); }
+.lamp { width: 3.4rem; height: 3.4rem; border-radius: 50%; border: 2px solid var(--rule); background: #000; transition: background .15s, box-shadow .15s; }
+.dial { width: 100%; }
+.dial-arc { fill: none; stroke: var(--rule); stroke-width: 6; stroke-linecap: round; }
+.dial-hand { transform-origin: 100px 104px; transition: transform 0s linear; }
+.dial-hand line { stroke: var(--accent); stroke-width: 5; stroke-linecap: round; }
+.dial-hub { fill: var(--ink); }
+.line { min-height: 1.6rem; margin: 0; text-align: center; font-family: var(--font-display); font-size: 1.2rem; letter-spacing: .04em; }
+.stage .ng-btn-primary { padding: .5rem; font-size: 1rem; }
+.stage .ng-btn-primary:active { transform: translateY(1px); }
+.slider { display: grid; grid-template-columns: 1fr auto; gap: .1rem .5rem; font-size: .85rem; color: var(--ink-soft); }
+.slider input { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); }
+.last { margin: auto 0 0; font-size: .8rem; color: var(--ink-faint); }
+@media (max-width: 800px) { main { grid-template-columns: minmax(0, 1fr); grid-template-rows: 60vh auto; } body { height: auto; } }

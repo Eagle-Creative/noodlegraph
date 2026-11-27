@@ -1,0 +1,355 @@
+{
+ "schema": "noodlegraph/1",
+ "id": "demo",
+ "name": "Demo show",
+ "description": "A button chain and a ticking chain, side by side.",
+ "enabled": true,
+ "nodes": [
+  {
+   "id": "button",
+   "kind": "button",
+   "options": {},
+   "position": [
+    20,
+    40
+   ]
+  },
+  {
+   "id": "for",
+   "kind": "for",
+   "options": {},
+   "position": [
+    280,
+    40
+   ]
+  },
+  {
+   "id": "colours",
+   "kind": "colour_list",
+   "options": {
+    "colours": [
+     "#ff3b30",
+     "#ffcc00",
+     "#34c759",
+     "#0a84ff"
+    ]
+   },
+   "position": [
+    280,
+    230
+   ]
+  },
+  {
+   "id": "lamp",
+   "kind": "set_lamp",
+   "options": {
+    "lamp": "left"
+   },
+   "position": [
+    560,
+    20
+   ]
+  },
+  {
+   "id": "wait",
+   "kind": "wait",
+   "options": {
+    "seconds": 0.4
+   },
+   "position": [
+    1060,
+    20
+   ]
+  },
+  {
+   "id": "say",
+   "kind": "say",
+   "options": {
+    "text": "Done!"
+   },
+   "position": [
+    560,
+    -110
+   ]
+  },
+  {
+   "id": "tick",
+   "kind": "interval",
+   "options": {
+    "every_s": 3
+   },
+   "position": [
+    20,
+    480
+   ]
+  },
+  {
+   "id": "slider",
+   "kind": "slider",
+   "options": {},
+   "position": [
+    20,
+    650
+   ]
+  },
+  {
+   "id": "map",
+   "kind": "map_range",
+   "options": {
+    "in_max": 100,
+    "out_max": 180
+   },
+   "position": [
+    280,
+    630
+   ]
+  },
+  {
+   "id": "move",
+   "kind": "move_pointer",
+   "options": {
+    "seconds": 0.6
+   },
+   "position": [
+    560,
+    480
+   ]
+  },
+  {
+   "id": "hue",
+   "kind": "colour_hue",
+   "options": {
+    "brightness": 100
+   },
+   "position": [
+    560,
+    720
+   ]
+  },
+  {
+   "id": "lamp2",
+   "kind": "set_lamp",
+   "options": {
+    "lamp": "right"
+   },
+   "position": [
+    830,
+    500
+   ]
+  },
+  {
+   "id": "words",
+   "kind": "text_list",
+   "options": {
+    "texts": [
+     "Red",
+     "Yellow",
+     "Green",
+     "Blue"
+    ]
+   },
+   "position": [
+    560,
+    230
+   ]
+  },
+  {
+   "id": "name",
+   "kind": "say",
+   "options": {},
+   "position": [
+    810,
+    20
+   ]
+  },
+  {
+   "id": "bow",
+   "kind": "move_pointer",
+   "options": {
+    "angle": 180,
+    "seconds": 0.8
+   },
+   "position": [
+    560,
+    -240
+   ]
+  },
+  {
+   "id": "count",
+   "kind": "change_number",
+   "options": {
+    "name": "ticks"
+   },
+   "position": [
+    280,
+    480
+   ]
+  },
+  {
+   "id": "ticks",
+   "kind": "get_number",
+   "options": {
+    "name": "ticks"
+   },
+   "position": [
+    20,
+    800
+   ]
+  },
+  {
+   "id": "turn",
+   "kind": "map_range",
+   "options": {
+    "in_max": 8,
+    "out_max": 360,
+    "clamp": false
+   },
+   "position": [
+    280,
+    780
+   ]
+  }
+ ],
+ "wires": [
+  {
+   "from_node": "button",
+   "from_port": "out",
+   "to_node": "for",
+   "to_port": "in"
+  },
+  {
+   "from_node": "colours",
+   "from_port": "count",
+   "to_node": "for",
+   "to_port": "end"
+  },
+  {
+   "from_node": "for",
+   "from_port": "i",
+   "to_node": "colours",
+   "to_port": "index"
+  },
+  {
+   "from_node": "for",
+   "from_port": "each",
+   "to_node": "lamp",
+   "to_port": "in"
+  },
+  {
+   "from_node": "colours",
+   "from_port": "item",
+   "to_node": "lamp",
+   "to_port": "colour"
+  },
+  {
+   "from_node": "for",
+   "from_port": "done",
+   "to_node": "say",
+   "to_port": "in"
+  },
+  {
+   "from_node": "slider",
+   "from_port": "value",
+   "to_node": "map",
+   "to_port": "value"
+  },
+  {
+   "from_node": "map",
+   "from_port": "result",
+   "to_node": "move",
+   "to_port": "angle"
+  },
+  {
+   "from_node": "move",
+   "from_port": "out",
+   "to_node": "lamp2",
+   "to_port": "in"
+  },
+  {
+   "from_node": "hue",
+   "from_port": "colour",
+   "to_node": "lamp2",
+   "to_port": "colour"
+  },
+  {
+   "from_node": "lamp",
+   "from_port": "out",
+   "to_node": "name",
+   "to_port": "in"
+  },
+  {
+   "from_node": "name",
+   "from_port": "out",
+   "to_node": "wait",
+   "to_port": "in"
+  },
+  {
+   "from_node": "for",
+   "from_port": "i",
+   "to_node": "words",
+   "to_port": "index"
+  },
+  {
+   "from_node": "words",
+   "from_port": "item",
+   "to_node": "name",
+   "to_port": "text"
+  },
+  {
+   "from_node": "for",
+   "from_port": "done",
+   "to_node": "bow",
+   "to_port": "in"
+  },
+  {
+   "from_node": "tick",
+   "from_port": "out",
+   "to_node": "count",
+   "to_port": "in"
+  },
+  {
+   "from_node": "count",
+   "from_port": "out",
+   "to_node": "move",
+   "to_port": "in"
+  },
+  {
+   "from_node": "ticks",
+   "from_port": "value",
+   "to_node": "turn",
+   "to_port": "value"
+  },
+  {
+   "from_node": "turn",
+   "from_port": "result",
+   "to_node": "hue",
+   "to_port": "hue"
+  }
+ ],
+ "notes": [
+  {
+   "id": "note",
+   "text": "Press Button on the stage: the lamp goes through the colours, then two things happen at once.",
+   "position": [
+    20,
+    160
+   ],
+   "size": [
+    230,
+    124
+   ]
+  },
+  {
+   "id": "note2",
+   "text": "Every 3 s: count in the variable \"ticks\", move the pointer to the slider, and give the right lamp the next colour.",
+   "position": [
+    20,
+    318
+   ],
+   "size": [
+    230,
+    132
+   ]
+  }
+ ]
+}

@@ -1,0 +1,2433 @@
+{
+ "about": "Graphs every noodlegraph runtime must treat the same way. See spec/SPEC.md, 'Test graphs'.",
+ "cases": [
+  {
+   "name": "a chain runs its steps in order",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "a",
+      "kind": "test_log",
+      "options": {
+       "value": 1
+      }
+     },
+     {
+      "id": "b",
+      "kind": "test_log",
+      "options": {
+       "value": 2
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "a",
+      "to_port": "in"
+     },
+     {
+      "from_node": "a",
+      "from_port": "out",
+      "to_node": "b",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     1,
+     2
+    ],
+    "steps": [
+     "a",
+     "b"
+    ]
+   }
+  },
+  {
+   "name": "a value wire replaces the setting",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "n",
+      "kind": "number",
+      "options": {
+       "value": 7
+      }
+     },
+     {
+      "id": "a",
+      "kind": "test_log",
+      "options": {
+       "value": 1
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "a",
+      "to_port": "in"
+     },
+     {
+      "from_node": "n",
+      "from_port": "value",
+      "to_node": "a",
+      "to_port": "value"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     7
+    ]
+   }
+  },
+  {
+   "name": "For counts up and feeds i through a value block",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "f",
+      "kind": "for",
+      "options": {
+       "start": 1,
+       "end": 3
+      }
+     },
+     {
+      "id": "m",
+      "kind": "map_range",
+      "options": {
+       "in_max": 1,
+       "out_max": 10,
+       "clamp": false
+      }
+     },
+     {
+      "id": "s",
+      "kind": "test_log"
+     },
+     {
+      "id": "e",
+      "kind": "test_log",
+      "options": {
+       "value": 99
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "f",
+      "to_port": "in"
+     },
+     {
+      "from_node": "f",
+      "from_port": "each",
+      "to_node": "s",
+      "to_port": "in"
+     },
+     {
+      "from_node": "f",
+      "from_port": "i",
+      "to_node": "m",
+      "to_port": "value"
+     },
+     {
+      "from_node": "m",
+      "from_port": "result",
+      "to_node": "s",
+      "to_port": "value"
+     },
+     {
+      "from_node": "f",
+      "from_port": "done",
+      "to_node": "e",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     10,
+     20,
+     30,
+     99
+    ]
+   }
+  },
+  {
+   "name": "For counts down when from is larger than to, in steps",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "f",
+      "kind": "for",
+      "options": {
+       "start": 2,
+       "end": 1,
+       "step": 0.5
+      }
+     },
+     {
+      "id": "s",
+      "kind": "test_log"
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "f",
+      "to_port": "in"
+     },
+     {
+      "from_node": "f",
+      "from_port": "each",
+      "to_node": "s",
+      "to_port": "in"
+     },
+     {
+      "from_node": "f",
+      "from_port": "i",
+      "to_node": "s",
+      "to_port": "value"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     2,
+     1.5,
+     1
+    ]
+   }
+  },
+  {
+   "name": "If takes then when its condition is true",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "c",
+      "kind": "compare",
+      "options": {
+       "a": 5,
+       "op": ">",
+       "b": 3
+      }
+     },
+     {
+      "id": "i",
+      "kind": "branch"
+     },
+     {
+      "id": "y",
+      "kind": "test_log",
+      "options": {
+       "value": 1
+      }
+     },
+     {
+      "id": "n",
+      "kind": "test_log",
+      "options": {
+       "value": 0
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "i",
+      "to_port": "in"
+     },
+     {
+      "from_node": "c",
+      "from_port": "result",
+      "to_node": "i",
+      "to_port": "condition"
+     },
+     {
+      "from_node": "i",
+      "from_port": "then",
+      "to_node": "y",
+      "to_port": "in"
+     },
+     {
+      "from_node": "i",
+      "from_port": "else",
+      "to_node": "n",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     1
+    ]
+   }
+  },
+  {
+   "name": "If takes else when its condition is false",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "c",
+      "kind": "compare",
+      "options": {
+       "a": 3,
+       "op": ">=",
+       "b": 3.5
+      }
+     },
+     {
+      "id": "i",
+      "kind": "branch"
+     },
+     {
+      "id": "y",
+      "kind": "test_log",
+      "options": {
+       "value": 1
+      }
+     },
+     {
+      "id": "n",
+      "kind": "test_log",
+      "options": {
+       "value": 0
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "i",
+      "to_port": "in"
+     },
+     {
+      "from_node": "c",
+      "from_port": "result",
+      "to_node": "i",
+      "to_port": "condition"
+     },
+     {
+      "from_node": "i",
+      "from_port": "then",
+      "to_node": "y",
+      "to_port": "in"
+     },
+     {
+      "from_node": "i",
+      "from_port": "else",
+      "to_node": "n",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     0
+    ]
+   }
+  },
+  {
+   "name": "a list item follows the loop, count feeds the loop, past the last wraps",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "l",
+      "kind": "number_list",
+      "options": {
+       "values": [
+        7,
+        8,
+        9
+       ]
+      }
+     },
+     {
+      "id": "f",
+      "kind": "for",
+      "options": {
+       "end": 4
+      }
+     },
+     {
+      "id": "s",
+      "kind": "test_log"
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "f",
+      "to_port": "in"
+     },
+     {
+      "from_node": "f",
+      "from_port": "i",
+      "to_node": "l",
+      "to_port": "index"
+     },
+     {
+      "from_node": "l",
+      "from_port": "item",
+      "to_node": "s",
+      "to_port": "value"
+     },
+     {
+      "from_node": "f",
+      "from_port": "each",
+      "to_node": "s",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     7,
+     8,
+     9,
+     7
+    ]
+   }
+  },
+  {
+   "name": "count of a list may feed the For whose i picks its item",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "l",
+      "kind": "text_list",
+      "options": {
+       "texts": [
+        "a",
+        "b"
+       ]
+      }
+     },
+     {
+      "id": "f",
+      "kind": "for"
+     },
+     {
+      "id": "s",
+      "kind": "test_show"
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "f",
+      "to_port": "in"
+     },
+     {
+      "from_node": "l",
+      "from_port": "count",
+      "to_node": "f",
+      "to_port": "end"
+     },
+     {
+      "from_node": "f",
+      "from_port": "i",
+      "to_node": "l",
+      "to_port": "index"
+     },
+     {
+      "from_node": "l",
+      "from_port": "item",
+      "to_node": "s",
+      "to_port": "text"
+     },
+     {
+      "from_node": "f",
+      "from_port": "each",
+      "to_node": "s",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     "a",
+     "b"
+    ]
+   }
+  },
+  {
+   "name": "colours arrive as red, green, blue; one colour feeds a list input",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "p",
+      "kind": "test_paint",
+      "options": {
+       "colour": "#ff8000"
+      }
+     },
+     {
+      "id": "h",
+      "kind": "colour_hue",
+      "options": {
+       "hue": 120,
+       "brightness": 100
+      }
+     },
+     {
+      "id": "q",
+      "kind": "test_paints"
+     },
+     {
+      "id": "l",
+      "kind": "colour_list",
+      "options": {
+       "colours": [
+        "#000001",
+        "#020000"
+       ]
+      }
+     },
+     {
+      "id": "r",
+      "kind": "test_paints"
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "p",
+      "to_port": "in"
+     },
+     {
+      "from_node": "p",
+      "from_port": "out",
+      "to_node": "q",
+      "to_port": "in"
+     },
+     {
+      "from_node": "h",
+      "from_port": "colour",
+      "to_node": "q",
+      "to_port": "colours"
+     },
+     {
+      "from_node": "q",
+      "from_port": "out",
+      "to_node": "r",
+      "to_port": "in"
+     },
+     {
+      "from_node": "l",
+      "from_port": "list",
+      "to_node": "r",
+      "to_port": "colours"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     [
+      255,
+      128,
+      0
+     ],
+     [
+      [
+       0,
+       255,
+       0
+      ]
+     ],
+     [
+      [
+       0,
+       0,
+       1
+      ],
+      [
+       2,
+       0,
+       0
+      ]
+     ]
+    ]
+   }
+  },
+  {
+   "name": "loops inside loops",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "o",
+      "kind": "for",
+      "options": {
+       "end": 2
+      }
+     },
+     {
+      "id": "i",
+      "kind": "for",
+      "options": {
+       "end": 2
+      }
+     },
+     {
+      "id": "s",
+      "kind": "test_log"
+     },
+     {
+      "id": "e",
+      "kind": "test_log",
+      "options": {
+       "value": -1
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "o",
+      "to_port": "in"
+     },
+     {
+      "from_node": "o",
+      "from_port": "each",
+      "to_node": "i",
+      "to_port": "in"
+     },
+     {
+      "from_node": "i",
+      "from_port": "each",
+      "to_node": "s",
+      "to_port": "in"
+     },
+     {
+      "from_node": "i",
+      "from_port": "i",
+      "to_node": "s",
+      "to_port": "value"
+     },
+     {
+      "from_node": "i",
+      "from_port": "done",
+      "to_node": "e",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     1,
+     2,
+     -1,
+     1,
+     2,
+     -1
+    ]
+   }
+  },
+  {
+   "name": "a loop's value is only known inside its rounds",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "o",
+      "kind": "for",
+      "options": {
+       "end": 2
+      }
+     },
+     {
+      "id": "i",
+      "kind": "for",
+      "options": {
+       "end": 2
+      }
+     },
+     {
+      "id": "m",
+      "kind": "map_range",
+      "options": {
+       "in_max": 1,
+       "out_max": 10,
+       "clamp": false
+      }
+     },
+     {
+      "id": "s",
+      "kind": "test_log"
+     },
+     {
+      "id": "s2",
+      "kind": "test_log"
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "o",
+      "to_port": "in"
+     },
+     {
+      "from_node": "o",
+      "from_port": "each",
+      "to_node": "i",
+      "to_port": "in"
+     },
+     {
+      "from_node": "i",
+      "from_port": "each",
+      "to_node": "s",
+      "to_port": "in"
+     },
+     {
+      "from_node": "o",
+      "from_port": "i",
+      "to_node": "m",
+      "to_port": "value"
+     },
+     {
+      "from_node": "m",
+      "from_port": "result",
+      "to_node": "s",
+      "to_port": "value"
+     },
+     {
+      "from_node": "i",
+      "from_port": "done",
+      "to_node": "s2",
+      "to_port": "in"
+     },
+     {
+      "from_node": "i",
+      "from_port": "i",
+      "to_node": "s2",
+      "to_port": "value"
+     }
+    ]
+   },
+   "expect": {
+    "result": "failed",
+    "message_contains": "only known inside its rounds",
+    "log": [
+     10,
+     10
+    ]
+   }
+  },
+  {
+   "name": "a failing block ends its chain with its message",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "a",
+      "kind": "test_log",
+      "options": {
+       "value": 1
+      }
+     },
+     {
+      "id": "b",
+      "kind": "test_fail"
+     },
+     {
+      "id": "c",
+      "kind": "test_log",
+      "options": {
+       "value": 2
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "a",
+      "to_port": "in"
+     },
+     {
+      "from_node": "a",
+      "from_port": "out",
+      "to_node": "b",
+      "to_port": "in"
+     },
+     {
+      "from_node": "b",
+      "from_port": "out",
+      "to_node": "c",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "failed",
+    "message": "it broke",
+    "log": [
+     1
+    ]
+   }
+  },
+  {
+   "name": "a flow output may continue in several places: all of them run",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "a",
+      "kind": "test_log",
+      "options": {
+       "value": 1
+      }
+     },
+     {
+      "id": "b",
+      "kind": "test_log",
+      "options": {
+       "value": 2
+      }
+     },
+     {
+      "id": "c",
+      "kind": "test_log",
+      "options": {
+       "value": 3
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "a",
+      "to_port": "in"
+     },
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "b",
+      "to_port": "in"
+     },
+     {
+      "from_node": "b",
+      "from_port": "out",
+      "to_node": "c",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     1,
+     2,
+     3
+    ],
+    "log_any_order": true
+   }
+  },
+  {
+   "name": "branches inside a loop finish before the next round",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "f",
+      "kind": "for",
+      "options": {
+       "end": 2
+      }
+     },
+     {
+      "id": "a",
+      "kind": "test_log"
+     },
+     {
+      "id": "w",
+      "kind": "wait",
+      "options": {
+       "seconds": 0.05
+      }
+     },
+     {
+      "id": "m",
+      "kind": "map_range",
+      "options": {
+       "in_max": 1,
+       "out_max": 10,
+       "clamp": false
+      }
+     },
+     {
+      "id": "b",
+      "kind": "test_log"
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "f",
+      "to_port": "in"
+     },
+     {
+      "from_node": "f",
+      "from_port": "each",
+      "to_node": "a",
+      "to_port": "in"
+     },
+     {
+      "from_node": "f",
+      "from_port": "i",
+      "to_node": "a",
+      "to_port": "value"
+     },
+     {
+      "from_node": "f",
+      "from_port": "each",
+      "to_node": "w",
+      "to_port": "in"
+     },
+     {
+      "from_node": "w",
+      "from_port": "out",
+      "to_node": "b",
+      "to_port": "in"
+     },
+     {
+      "from_node": "f",
+      "from_port": "i",
+      "to_node": "m",
+      "to_port": "value"
+     },
+     {
+      "from_node": "m",
+      "from_port": "result",
+      "to_node": "b",
+      "to_port": "value"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     1,
+     10,
+     2,
+     20
+    ]
+   }
+  },
+  {
+   "name": "a block two branches lead to runs once for each",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "a",
+      "kind": "test_log",
+      "options": {
+       "value": 1
+      }
+     },
+     {
+      "id": "b",
+      "kind": "test_log",
+      "options": {
+       "value": 2
+      }
+     },
+     {
+      "id": "c",
+      "kind": "test_log",
+      "options": {
+       "value": 3
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "a",
+      "to_port": "in"
+     },
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "b",
+      "to_port": "in"
+     },
+     {
+      "from_node": "a",
+      "from_port": "out",
+      "to_node": "c",
+      "to_port": "in"
+     },
+     {
+      "from_node": "b",
+      "from_port": "out",
+      "to_node": "c",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     1,
+     2,
+     3,
+     3
+    ],
+    "log_any_order": true
+   }
+  },
+  {
+   "name": "a failing branch ends the chain and stops the other branches",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "x",
+      "kind": "test_fail"
+     },
+     {
+      "id": "w",
+      "kind": "wait",
+      "options": {
+       "seconds": 0.3
+      }
+     },
+     {
+      "id": "b",
+      "kind": "test_log",
+      "options": {
+       "value": 5
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "w",
+      "to_port": "in"
+     },
+     {
+      "from_node": "w",
+      "from_port": "out",
+      "to_node": "b",
+      "to_port": "in"
+     },
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "x",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "failed",
+    "message": "it broke",
+    "log": []
+   }
+  },
+  {
+   "name": "a While that is false from the start goes straight to done",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "w",
+      "kind": "while",
+      "options": {
+       "condition": false
+      }
+     },
+     {
+      "id": "a",
+      "kind": "test_log",
+      "options": {
+       "value": 1
+      }
+     },
+     {
+      "id": "b",
+      "kind": "test_log",
+      "options": {
+       "value": 2
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "w",
+      "to_port": "in"
+     },
+     {
+      "from_node": "w",
+      "from_port": "each",
+      "to_node": "a",
+      "to_port": "in"
+     },
+     {
+      "from_node": "w",
+      "from_port": "done",
+      "to_node": "b",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     2
+    ]
+   }
+  },
+  {
+   "name": "a variable counts across the rounds of a loop",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "f",
+      "kind": "for",
+      "options": {
+       "end": 3
+      }
+     },
+     {
+      "id": "c",
+      "kind": "change_number",
+      "options": {
+       "name": "sum"
+      }
+     },
+     {
+      "id": "s",
+      "kind": "test_log"
+     },
+     {
+      "id": "v",
+      "kind": "get_number",
+      "options": {
+       "name": "sum"
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "f",
+      "to_port": "in"
+     },
+     {
+      "from_node": "f",
+      "from_port": "each",
+      "to_node": "c",
+      "to_port": "in"
+     },
+     {
+      "from_node": "f",
+      "from_port": "i",
+      "to_node": "c",
+      "to_port": "by"
+     },
+     {
+      "from_node": "f",
+      "from_port": "done",
+      "to_node": "s",
+      "to_port": "in"
+     },
+     {
+      "from_node": "v",
+      "from_port": "value",
+      "to_node": "s",
+      "to_port": "value"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     6
+    ]
+   }
+  },
+  {
+   "name": "a variable nothing was stored in reads as 0 and as an empty text",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "a",
+      "kind": "test_log",
+      "options": {
+       "value": 9
+      }
+     },
+     {
+      "id": "n",
+      "kind": "get_number"
+     },
+     {
+      "id": "b",
+      "kind": "test_show",
+      "options": {
+       "text": "z"
+      }
+     },
+     {
+      "id": "x",
+      "kind": "get_text",
+      "options": {
+       "name": "words"
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "a",
+      "to_port": "in"
+     },
+     {
+      "from_node": "n",
+      "from_port": "value",
+      "to_node": "a",
+      "to_port": "value"
+     },
+     {
+      "from_node": "a",
+      "from_port": "out",
+      "to_node": "b",
+      "to_port": "in"
+     },
+     {
+      "from_node": "x",
+      "from_port": "value",
+      "to_node": "b",
+      "to_port": "text"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     0,
+     ""
+    ]
+   }
+  },
+  {
+   "name": "While goes on as long as a variable says so",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "w",
+      "kind": "while"
+     },
+     {
+      "id": "cmp",
+      "kind": "compare",
+      "options": {
+       "op": "<",
+       "b": 3
+      }
+     },
+     {
+      "id": "n",
+      "kind": "get_number",
+      "options": {
+       "name": "n"
+      }
+     },
+     {
+      "id": "c",
+      "kind": "change_number",
+      "options": {
+       "name": "n"
+      }
+     },
+     {
+      "id": "s",
+      "kind": "test_log"
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "w",
+      "to_port": "in"
+     },
+     {
+      "from_node": "cmp",
+      "from_port": "result",
+      "to_node": "w",
+      "to_port": "condition"
+     },
+     {
+      "from_node": "n",
+      "from_port": "value",
+      "to_node": "cmp",
+      "to_port": "a"
+     },
+     {
+      "from_node": "w",
+      "from_port": "each",
+      "to_node": "c",
+      "to_port": "in"
+     },
+     {
+      "from_node": "c",
+      "from_port": "out",
+      "to_node": "s",
+      "to_port": "in"
+     },
+     {
+      "from_node": "n",
+      "from_port": "value",
+      "to_node": "s",
+      "to_port": "value"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "name": "texts, colours and yes / no are stored and read back",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "st",
+      "kind": "set_text",
+      "options": {
+       "name": "word",
+       "value": "hi"
+      }
+     },
+     {
+      "id": "sc",
+      "kind": "set_colour",
+      "options": {
+       "name": "paint",
+       "value": "#010203"
+      }
+     },
+     {
+      "id": "sb",
+      "kind": "set_bool",
+      "options": {
+       "name": "go",
+       "value": false
+      }
+     },
+     {
+      "id": "a",
+      "kind": "test_show"
+     },
+     {
+      "id": "gt",
+      "kind": "get_text",
+      "options": {
+       "name": "word"
+      }
+     },
+     {
+      "id": "b",
+      "kind": "test_paint"
+     },
+     {
+      "id": "gc",
+      "kind": "get_colour",
+      "options": {
+       "name": "paint"
+      }
+     },
+     {
+      "id": "i",
+      "kind": "branch"
+     },
+     {
+      "id": "gb",
+      "kind": "get_bool",
+      "options": {
+       "name": "go"
+      }
+     },
+     {
+      "id": "y",
+      "kind": "test_log",
+      "options": {
+       "value": 1
+      }
+     },
+     {
+      "id": "n",
+      "kind": "test_log",
+      "options": {
+       "value": 0
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "st",
+      "to_port": "in"
+     },
+     {
+      "from_node": "st",
+      "from_port": "out",
+      "to_node": "sc",
+      "to_port": "in"
+     },
+     {
+      "from_node": "sc",
+      "from_port": "out",
+      "to_node": "sb",
+      "to_port": "in"
+     },
+     {
+      "from_node": "sb",
+      "from_port": "out",
+      "to_node": "a",
+      "to_port": "in"
+     },
+     {
+      "from_node": "gt",
+      "from_port": "value",
+      "to_node": "a",
+      "to_port": "text"
+     },
+     {
+      "from_node": "a",
+      "from_port": "out",
+      "to_node": "b",
+      "to_port": "in"
+     },
+     {
+      "from_node": "gc",
+      "from_port": "value",
+      "to_node": "b",
+      "to_port": "colour"
+     },
+     {
+      "from_node": "b",
+      "from_port": "out",
+      "to_node": "i",
+      "to_port": "in"
+     },
+     {
+      "from_node": "gb",
+      "from_port": "value",
+      "to_node": "i",
+      "to_port": "condition"
+     },
+     {
+      "from_node": "i",
+      "from_port": "then",
+      "to_node": "y",
+      "to_port": "in"
+     },
+     {
+      "from_node": "i",
+      "from_port": "else",
+      "to_node": "n",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     "hi",
+     [
+      1,
+      2,
+      3
+     ],
+     0
+    ]
+   }
+  },
+  {
+   "name": "adding to a variable that holds a text fails the chain",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "s",
+      "kind": "set_text",
+      "options": {
+       "value": "a"
+      }
+     },
+     {
+      "id": "c",
+      "kind": "change_number"
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "s",
+      "to_port": "in"
+     },
+     {
+      "from_node": "s",
+      "from_port": "out",
+      "to_node": "c",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "failed",
+    "message_contains": "is not a number",
+    "log": []
+   }
+  },
+  {
+   "name": "a graph runs another graph and waits for it",
+   "fire": "t",
+   "with": [
+    {
+     "schema": "noodlegraph/1",
+     "id": "sub",
+     "name": "Case",
+     "enabled": true,
+     "nodes": [
+      {
+       "id": "in",
+       "kind": "called"
+      },
+      {
+       "id": "s",
+       "kind": "test_log",
+       "options": {
+        "value": 7
+       }
+      }
+     ],
+     "wires": [
+      {
+       "from_node": "in",
+       "from_port": "out",
+       "to_node": "s",
+       "to_port": "in"
+      }
+     ]
+    }
+   ],
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "a",
+      "kind": "test_log",
+      "options": {
+       "value": 1
+      }
+     },
+     {
+      "id": "c1",
+      "kind": "call",
+      "options": {
+       "graph": "sub"
+      }
+     },
+     {
+      "id": "c2",
+      "kind": "call",
+      "options": {
+       "graph": "sub"
+      }
+     },
+     {
+      "id": "b",
+      "kind": "test_log",
+      "options": {
+       "value": 2
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "a",
+      "to_port": "in"
+     },
+     {
+      "from_node": "a",
+      "from_port": "out",
+      "to_node": "c1",
+      "to_port": "in"
+     },
+     {
+      "from_node": "c1",
+      "from_port": "out",
+      "to_node": "c2",
+      "to_port": "in"
+     },
+     {
+      "from_node": "c2",
+      "from_port": "out",
+      "to_node": "b",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     1,
+     7,
+     7,
+     2
+    ]
+   }
+  },
+  {
+   "name": "each graph has its own variables",
+   "fire": "t",
+   "with": [
+    {
+     "schema": "noodlegraph/1",
+     "id": "sub",
+     "name": "Case",
+     "enabled": true,
+     "nodes": [
+      {
+       "id": "in",
+       "kind": "called"
+      },
+      {
+       "id": "s",
+       "kind": "test_log"
+      },
+      {
+       "id": "x",
+       "kind": "get_number"
+      },
+      {
+       "id": "c",
+       "kind": "change_number"
+      }
+     ],
+     "wires": [
+      {
+       "from_node": "in",
+       "from_port": "out",
+       "to_node": "s",
+       "to_port": "in"
+      },
+      {
+       "from_node": "x",
+       "from_port": "value",
+       "to_node": "s",
+       "to_port": "value"
+      },
+      {
+       "from_node": "s",
+       "from_port": "out",
+       "to_node": "c",
+       "to_port": "in"
+      }
+     ]
+    }
+   ],
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "set",
+      "kind": "set_number",
+      "options": {
+       "value": 5
+      }
+     },
+     {
+      "id": "c",
+      "kind": "call",
+      "options": {
+       "graph": "sub"
+      }
+     },
+     {
+      "id": "c2",
+      "kind": "call",
+      "options": {
+       "graph": "sub"
+      }
+     },
+     {
+      "id": "s",
+      "kind": "test_log"
+     },
+     {
+      "id": "x",
+      "kind": "get_number"
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "set",
+      "to_port": "in"
+     },
+     {
+      "from_node": "set",
+      "from_port": "out",
+      "to_node": "c",
+      "to_port": "in"
+     },
+     {
+      "from_node": "c",
+      "from_port": "out",
+      "to_node": "c2",
+      "to_port": "in"
+     },
+     {
+      "from_node": "c2",
+      "from_port": "out",
+      "to_node": "s",
+      "to_port": "in"
+     },
+     {
+      "from_node": "x",
+      "from_port": "value",
+      "to_node": "s",
+      "to_port": "value"
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     0,
+     1,
+     5
+    ]
+   }
+  },
+  {
+   "name": "a graph that runs itself without end fails",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "in",
+      "kind": "called"
+     },
+     {
+      "id": "c",
+      "kind": "call",
+      "options": {
+       "graph": "case"
+      }
+     },
+     {
+      "id": "c0",
+      "kind": "call",
+      "options": {
+       "graph": "case"
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "c0",
+      "to_port": "in"
+     },
+     {
+      "from_node": "in",
+      "from_port": "out",
+      "to_node": "c",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "failed",
+    "message_contains": "too deep",
+    "log": []
+   }
+  },
+  {
+   "name": "running a graph that is not there fails the chain",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "c",
+      "kind": "call",
+      "options": {
+       "graph": "nowhere"
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "c",
+      "to_port": "in"
+     }
+    ]
+   },
+   "expect": {
+    "result": "failed",
+    "message_contains": "there is no graph 'nowhere'",
+    "log": []
+   }
+  },
+  {
+   "name": "notes are carried along and change nothing",
+   "fire": "t",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "a",
+      "kind": "test_log",
+      "options": {
+       "value": 1
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "a",
+      "to_port": "in"
+     }
+    ],
+    "notes": [
+     {
+      "id": "n1",
+      "text": "What this does",
+      "position": [
+       10,
+       200
+      ],
+      "size": [
+       220,
+       90
+      ]
+     }
+    ]
+   },
+   "expect": {
+    "result": "finished",
+    "log": [
+     1
+    ]
+   }
+  },
+  {
+   "name": "a value is worked out without a chain",
+   "evaluate": [
+    "m",
+    "result"
+   ],
+   "value": 90,
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "n",
+      "kind": "number",
+      "options": {
+       "value": 50
+      }
+     },
+     {
+      "id": "m",
+      "kind": "map_range",
+      "options": {
+       "in_max": 100,
+       "out_max": 180
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "n",
+      "from_port": "value",
+      "to_node": "m",
+      "to_port": "value"
+     }
+    ]
+   }
+  },
+  {
+   "name": "a list is worked out without a chain",
+   "evaluate": [
+    "l",
+    "list"
+   ],
+   "value": [
+    "x",
+    "y"
+   ],
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "l",
+      "kind": "text_list",
+      "options": {
+       "texts": [
+        "x",
+        "y"
+       ]
+      }
+     }
+    ],
+    "wires": []
+   }
+  },
+  {
+   "name": "unknown block, bad settings and bad wires are named",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "a",
+      "kind": "test_log"
+     },
+     {
+      "id": "w",
+      "kind": "wait",
+      "options": {
+       "seconds": -1
+      }
+     },
+     {
+      "id": "x",
+      "kind": "nope"
+     },
+     {
+      "id": "c",
+      "kind": "compare"
+     },
+     {
+      "id": "u",
+      "kind": "test_log",
+      "options": {
+       "nonsense": 1
+      }
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "a",
+      "to_port": "value"
+     },
+     {
+      "from_node": "c",
+      "from_port": "result",
+      "to_node": "a",
+      "to_port": "value"
+     },
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "zzz",
+      "to_port": "in"
+     },
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "a",
+      "to_port": "nowhere"
+     }
+    ]
+   },
+   "problems": [
+    "x: unknown block type 'nope'",
+    "w (Wait): seconds:",
+    "u (Log): nonsense:",
+    "wire t.out -> a.value: flow cannot feed number",
+    "wire c.result -> a.value: bool cannot feed number",
+    "wire t.out -> zzz.in: a block is missing",
+    "wire t.out -> a.nowhere: no such port"
+   ]
+  },
+  {
+   "name": "a value input takes one wire",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "a",
+      "kind": "test_log"
+     },
+     {
+      "id": "n",
+      "kind": "number"
+     },
+     {
+      "id": "m",
+      "kind": "number"
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "a",
+      "to_port": "in"
+     },
+     {
+      "from_node": "n",
+      "from_port": "value",
+      "to_node": "a",
+      "to_port": "value"
+     },
+     {
+      "from_node": "m",
+      "from_port": "value",
+      "to_node": "a",
+      "to_port": "value"
+     }
+    ]
+   },
+   "problems": [
+    "wire m.value -> a.value: this input already has a wire"
+   ]
+  },
+  {
+   "name": "a circle of flow wires is refused",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "a",
+      "kind": "test_log"
+     },
+     {
+      "id": "b",
+      "kind": "test_log"
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "t",
+      "from_port": "out",
+      "to_node": "a",
+      "to_port": "in"
+     },
+     {
+      "from_node": "a",
+      "from_port": "out",
+      "to_node": "b",
+      "to_port": "in"
+     },
+     {
+      "from_node": "b",
+      "from_port": "out",
+      "to_node": "a",
+      "to_port": "in"
+     }
+    ]
+   },
+   "problems": [
+    "the wires form a circle"
+   ]
+  },
+  {
+   "name": "a circle of value wires is refused",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "a",
+      "kind": "map_range"
+     },
+     {
+      "id": "b",
+      "kind": "map_range"
+     }
+    ],
+    "wires": [
+     {
+      "from_node": "a",
+      "from_port": "result",
+      "to_node": "b",
+      "to_port": "value"
+     },
+     {
+      "from_node": "b",
+      "from_port": "result",
+      "to_node": "a",
+      "to_port": "value"
+     }
+    ]
+   },
+   "problems": [
+    "the wires form a circle"
+   ]
+  },
+  {
+   "name": "a list needs at least one item and a text is not a number",
+   "graph": {
+    "schema": "noodlegraph/1",
+    "id": "case",
+    "name": "Case",
+    "enabled": true,
+    "nodes": [
+     {
+      "id": "t",
+      "kind": "manual"
+     },
+     {
+      "id": "l",
+      "kind": "colour_list",
+      "options": {
+       "colours": []
+      }
+     },
+     {
+      "id": "n",
+      "kind": "number",
+      "options": {
+       "value": "seven"
+      }
+     },
+     {
+      "id": "c",
+      "kind": "colour_list",
+      "options": {
+       "colours": [
+        "red"
+       ]
+      }
+     }
+    ],
+    "wires": []
+   },
+   "problems": [
+    "l (Colour list): colours",
+    "n (Number): value",
+    "c (Colour list): colours"
+   ]
+  }
+ ]
+}

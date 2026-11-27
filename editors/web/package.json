@@ -1,0 +1,26 @@
+{
+  "name": "noodlegraph-editor",
+  "version": "0.4.0",
+  "description": "An editor for behaviour built from blocks: no dependencies, no build step",
+  "type": "module",
+  "main": "noodlegraph.js",
+  "exports": {
+    ".": "./noodlegraph.js",
+    "./panzoom.js": "./panzoom.js",
+    "./noodlegraph.css": "./noodlegraph.css"
+  },
+  "files": [
+    "noodlegraph.js",
+    "panzoom.js",
+    "noodlegraph.css"
+  ],
+  "license": "(AGPL-3.0-or-later OR LicenseRef-Noodlegraph-Commercial)",
+  "author": "Eagle Creative (https://eagle-creative.com)",
+  "keywords": [
+    "block coding",
+    "visual programming",
+    "node editor",
+    "node graph",
+    "flow"
+  ]
+}

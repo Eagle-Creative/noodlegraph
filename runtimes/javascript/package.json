@@ -1,0 +1,25 @@
+{
+  "name": "noodlegraph-runtime",
+  "version": "0.4.0",
+  "description": "Runs the graphs the noodlegraph editor draws: browser, Node.js, no dependencies",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "license": "(AGPL-3.0-or-later OR LicenseRef-Noodlegraph-Commercial)",
+  "author": "Eagle Creative (https://eagle-creative.com)",
+  "keywords": [
+    "block coding",
+    "visual programming",
+    "node editor",
+    "node graph",
+    "flow"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "noodlegraph/1/catalogue",
+  "title": "A noodlegraph block catalogue: the block types an editor offers",
+  "type": "array",
+  "items": { "$ref": "#/$defs/block" },
+  "$defs": {
+    "block": {
+      "type": "object",
+      "required": ["kind", "title", "category", "inputs", "outputs", "fields"],
+      "properties": {
+        "kind": { "type": "string", "description": "The name a node refers to. Unique in the catalogue." },
+        "title": { "type": "string" },
+        "category": { "type": "string", "description": "The group it is listed under: trigger, action, logic, value, or one of the host's own." },
+        "help": { "type": "string" },
+        "inputs": { "type": "array", "items": { "$ref": "#/$defs/port" } },
+        "outputs": { "type": "array", "items": { "$ref": "#/$defs/port" } },
+        "fields": { "type": "array", "items": { "$ref": "#/$defs/field" } }
+      }
+    },
+    "port": {
+      "type": "object",
+      "required": ["name", "type", "label"],
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string", "description": "flow, number, bool, text, colour, numbers, texts, colours, or a type of the host's own." },
+        "label": { "type": "string" },
+        "replaces": { "type": "string", "description": "Inputs only: the setting this input stands in for while it is wired." }
+      }
+    },
+    "field": {
+      "type": "object",
+      "required": ["name", "label", "kind"],
+      "properties": {
+        "name": { "type": "string" },
+        "label": { "type": "string" },
+        "kind": { "type": "string", "description": "int, float, bool, text, select, colour, time, a list type (numbers, texts, colours), or a kind of the host's own." },
+        "default": {},
+        "required": { "type": "boolean" },
+        "min": { "type": "number", "description": "Smallest value, included." },
+        "max": { "type": "number", "description": "Largest value, included." },
+        "above": { "type": "number", "description": "The value must be larger than this." },
+        "below": { "type": "number", "description": "The value must be smaller than this." },
+        "max_length": { "type": "integer" },
+        "options": { "type": "array", "description": "select: the values to choose from." },
+        "labels": { "type": "object", "description": "select: what to show for a value." },
+        "min_items": { "type": "integer" },
+        "max_items": { "type": "integer" },
+        "help": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,291 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Noodlegraph-Commercial -->
+<!-- SPDX-FileCopyrightText: 2026 Eagle Creative -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Noodlegraph: block coding for any application</title>
+  <meta name="description" content="A framework for block coding. Bring your own blocks; Noodlegraph draws, checks and runs the graph.">
+  <link rel="icon" type="image/svg+xml" href="../assets/mark.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;family=IBM+Plex+Sans:wght@400;500;600&amp;display=swap">
+  <link rel="stylesheet" href="../editors/web/noodlegraph.css">
+  <link rel="stylesheet" href="docs.css">
+</head>
+<body>
+  <a class="skip" href="#start">Skip to the documentation</a>
+  <nav class="side" aria-label="Documentation">
+    <a class="logo" href="#top"><img src="../assets/noodlegraph.svg" alt="Noodlegraph" width="186" height="32"></a>
+    <ol>
+      <li><a href="#start">Start</a></li>
+      <li><a href="#idea">How a graph works</a></li>
+      <li><a href="#blocks">Your own blocks</a></li>
+      <li><a href="#editor">The editor</a></li>
+      <li><a href="#runtime">The runtime</a></li>
+      <li><a href="#standard">Standard blocks</a></li>
+      <li><a href="#platforms">Other platforms</a></li>
+      <li><a href="#licence">Licence</a></li>
+    </ol>
+    <p class="side-foot">Version <span id="version"></span><br>by Eagle Creative</p>
+  </nav>
+
+  <main id="top">
+    <header class="hero">
+      <h1>Block coding for any application</h1>
+      <p class="lead">You bring the blocks: lamps, motors, sounds, orders, whatever your application does. Noodlegraph draws the graph, checks it and runs it.</p>
+      <div class="try">
+        <div id="editor" aria-label="A live Noodlegraph editor"></div>
+        <aside class="stage" aria-label="What the graph controls">
+          <div class="lamps">
+            <figure><span class="lamp" id="lamp-left"></span><figcaption>Left lamp</figcaption></figure>
+            <figure><span class="lamp" id="lamp-right"></span><figcaption>Right lamp</figcaption></figure>
+          </div>
+          <p class="line" id="line" aria-live="polite"></p>
+          <button type="button" id="button">Button</button>
+          <p class="stage-note" id="state">This graph is running in your browser. Press Button, then change the graph: it runs as you edit.</p>
+        </aside>
+      </div>
+    </header>
+
+    <section id="start">
+      <h2>Start</h2>
+      <p>Noodlegraph is plain files: no install step, no build step, no dependencies. Copy two folders into your project and serve them.</p>
+      <table>
+        <tr><th>Folder</th><th>What it is</th></tr>
+        <tr><td><code>editors/web/</code></td><td>The editor: <code>noodlegraph.js</code>, <code>panzoom.js</code>, <code>noodlegraph.css</code></td></tr>
+        <tr><td><code>runtimes/javascript/src/</code></td><td>The runtime that checks and runs graphs in a page or in Node.js</td></tr>
+        <tr><td><code>runtimes/python/</code></td><td>The same runtime for Python 3.11 and later</td></tr>
+      </table>
+      <p>A complete application is an editor, an engine and your blocks:</p>
+<pre><code>&lt;link rel="stylesheet" href="editors/web/noodlegraph.css"&gt;
+&lt;div id="editor" style="height: 70vh"&gt;&lt;/div&gt;
+&lt;script type="module"&gt;
+  import { createEditor } from "./editors/web/noodlegraph.js";
+  import { Context, Engine, STANDARD, catalogue, defineBlock, parse, registry }
+    from "./runtimes/javascript/src/index.js";
+
+  class Stage extends Context { lamp = "#000000"; }        // your application, as blocks see it
+
+  const SetLamp = defineBlock({                            // a block of your own
+    role: "action", kind: "set_lamp", title: "Set lamp",
+    inputs: [{ name: "in", type: "flow" }, { name: "colour", type: "colour" }],
+    fields: [{ name: "colour", kind: "colour", default: "#ff8800" }],
+    run({ ctx, inputs }) { ctx.lamp = inputs.colour; return "out"; },
+  });
+
+  const blocks = registry(STANDARD, SetLamp);
+  const engine = new Engine({ context: new Stage(), registry: blocks });
+  const editor = createEditor(document.querySelector("#editor"), {
+    blocks: catalogue(blocks),
+    graph: { id: "hello", enabled: true, nodes: [], wires: [] },
+    onChange: (graph) =&gt; engine.load([parse(graph)]),       // what is drawn is what runs
+    onRun: (node) =&gt; engine.fire("hello", node),
+  });
+  await engine.load([parse(editor.getGraph())]);
+  await engine.activate();
+&lt;/script&gt;</code></pre>
+      <p>The folder <code>demo/</code> is this with a name field, Save, an on and off switch, Import and Export.</p>
+    </section>
+
+    <section id="idea">
+      <h2>How a graph works</h2>
+      <p>A graph is blocks and the wires between them. People call the wires noodles.</p>
+      <dl class="terms">
+        <dt><span class="dot flow"></span>White wires are the order of steps</dt>
+        <dd>A <strong>trigger</strong> block watches for something: a button, a time, a value. When it happens, the blocks wired after it run one after the other. That is a <strong>chain</strong>.</dd>
+        <dt><span class="dot number"></span><span class="dot text"></span><span class="dot colour"></span>Coloured wires carry values</dt>
+        <dd>A value goes from a dot on the right of one block into a setting of another. Every setting that can take a wire has a dot of its type: number, yes or no, text, colour, or a list of those. Without a wire, the block uses what is typed into the setting.</dd>
+        <dt>Two white wires from one dot run at the same time</dt>
+        <dd>The chain goes on when both ways have finished. If one fails, the other stops.</dd>
+        <dt>If, For and While</dt>
+        <dd>If continues on one of two ways. For and While run the blocks on "each round" again and again, then continue on "done". For gives each round its number, <em>i</em>.</dd>
+        <dt>Variables remember</dt>
+        <dd>A variable is a named value of the graph. "Set number" stores, "Change number" counts, "Number variable" reads. Blocks that give the same name share the variable.</dd>
+        <dt>Graphs can run graphs</dt>
+        <dd>"Run graph" runs another graph from its "When run by another graph" block and waits for it. Build a sequence once, use it in several places.</dd>
+        <dt>Every chain runs on its own</dt>
+        <dd>Chains do not wait for each other. They run only while the engine is active; switching it off stops everything at once.</dd>
+      </dl>
+      <p>The graph is saved as one JSON document. What is drawn is exactly what runs:</p>
+<pre><code>{
+  "schema": "noodlegraph/1",
+  "id": "greet",
+  "name": "Greet the audience",
+  "enabled": true,
+  "nodes": [
+    { "id": "go",   "kind": "manual", "options": {},                  "position": [20, 40] },
+    { "id": "wait", "kind": "wait",   "options": { "seconds": 0.4 }, "position": [280, 40] }
+  ],
+  "wires": [
+    { "from_node": "go", "from_port": "out", "to_node": "wait", "to_port": "in" }
+  ]
+}</code></pre>
+    </section>
+
+    <section id="blocks">
+      <h2>Your own blocks</h2>
+      <p>A block type is a description, which the editor draws, and one function, which the engine runs. The function depends on the block's role.</p>
+      <table>
+        <tr><th>Role</th><th>Function</th><th>What it does</th></tr>
+        <tr><td><code>trigger</code></td><td><code>start({ ctx, options, emit })</code>, returning how to stop. Or <code>watch({ …, sleep })</code>, an async function that runs until it is stopped.</td><td>Calls <code>emit()</code> when its thing happens</td></tr>
+        <tr><td><code>action</code></td><td><code>run({ ctx, options, inputs, sleep, variables })</code></td><td>One step. Returns the name of the white dot to continue on</td></tr>
+        <tr><td><code>loop</code></td><td><code>again({ inputs, rounds })</code> and <code>values({ inputs, rounds })</code></td><td>Says whether another round runs, and what its dots give in it</td></tr>
+        <tr><td><code>value</code></td><td><code>compute({ ctx, options, inputs, variables })</code></td><td>Returns <code>{ dot: value }</code></td></tr>
+      </table>
+      <h3>A trigger</h3>
+<pre><code>const ButtonPressed = defineBlock({
+  role: "trigger", kind: "button", title: "When the button is pressed",
+  start: ({ ctx, emit }) =&gt; ctx.onButton(() =&gt; emit()),   // what it returns stops it again
+});</code></pre>
+      <h3>An action that takes a while</h3>
+<pre><code>const MovePointer = defineBlock({
+  role: "action", kind: "move_pointer", title: "Move pointer",
+  inputs: [{ name: "in", type: "flow" }, { name: "angle", type: "number" }],
+  fields: [{ name: "angle", kind: "float", min: 0, max: 180, default: 90 }],
+  async run({ ctx, inputs, sleep }) {
+    ctx.pointer = inputs.angle;
+    await sleep(0.5);            // wait through sleep(): a stopped chain ends at once
+    return "out";
+  },
+});</code></pre>
+      <h3>Settings</h3>
+      <p>Settings are the block's <code>fields</code>. An input with the same name as a field replaces it while a wire is connected.</p>
+      <table>
+        <tr><th>Kind</th><th>The editor shows</th><th>Extras</th></tr>
+        <tr><td><code>int</code>, <code>float</code></td><td>A number field</td><td><code>min</code>, <code>max</code>, <code>above</code>, <code>below</code></td></tr>
+        <tr><td><code>bool</code></td><td>A tick box</td><td></td></tr>
+        <tr><td><code>text</code></td><td>A text field</td><td><code>max_length</code></td></tr>
+        <tr><td><code>select</code></td><td>A dropdown</td><td><code>options</code>, <code>labels</code></td></tr>
+        <tr><td><code>colour</code>, <code>time</code></td><td>A colour picker, a time field</td><td></td></tr>
+        <tr><td><code>numbers</code>, <code>texts</code>, <code>colours</code></td><td>One row per item, with add, remove and move</td><td><code>min_items</code>, <code>max_items</code></td></tr>
+        <tr><td><code>variable</code></td><td>A name, with the names the graph already uses</td><td></td></tr>
+        <tr><td>a kind of your own</td><td>A dropdown of your <code>choices</code>, or what your <code>fields</code> function draws</td><td></td></tr>
+      </table>
+      <h3>Your own value types and groups</h3>
+<pre><code>registerType("pose", (value) =&gt; value);                         // runtime: a new wire type
+
+createEditor(element, {
+  types: { pose: { colour: "#b8336a" } },                       // editor: its colour
+  categories: { motion: { title: "Motion", colour: "#b8336a" } }, // a group of your own in Blocks
+  choices: { lamp: [{ value: "left", label: "Left lamp" }] },   // what a "lamp" setting offers
+});</code></pre>
+      <h3>In Python</h3>
+<pre><code>class SetLamp(Action):
+    kind = "set_lamp"
+    title = "Set lamp"
+    inputs = (Port("in", "flow"), Port("colour", "colour"))
+
+    class Options(BlockOptions):
+        colour: str = Field(default="#ff8800", json_schema_extra=ui("colour"))
+
+    async def run(self, inputs):
+        self.ctx.lamp = inputs["colour"]
+        return "out"</code></pre>
+    </section>
+
+    <section id="editor">
+      <h2>The editor</h2>
+      <p><code>createEditor(element, options)</code> puts an editor into an element that has a height, and returns a handle. The editor has no Save button, no name field and no list of graphs: those are your application's.</p>
+      <table>
+        <tr><th>Option</th><th>What it is</th></tr>
+        <tr><td><code>blocks</code>, <code>graph</code></td><td>The block types (<code>catalogue(registry)</code>) and the document to edit</td></tr>
+        <tr><td><code>readOnly</code></td><td>Look, select and pan, but change nothing</td></tr>
+        <tr><td><code>choices</code>, <code>fields</code></td><td>What settings of your own kinds offer, or how you draw them</td></tr>
+        <tr><td><code>types</code>, <code>categories</code></td><td>Colours and names of your own value types and block groups</td></tr>
+        <tr><td><code>text</code></td><td>Any word the editor shows: another language, other terms</td></tr>
+        <tr><td><code>storageKey</code></td><td>Where the browser remembers zoom and folded groups</td></tr>
+        <tr><td><code>onChange(graph)</code>, <code>onSelect(selection)</code>, <code>onRun(nodeId)</code></td><td>What happened</td></tr>
+      </table>
+      <table>
+        <tr><th>On the handle</th><th>What it does</th></tr>
+        <tr><td><code>getGraph()</code>, <code>setGraph(graph)</code></td><td>The document, out and in</td></tr>
+        <tr><td><code>setRunning([nodeId])</code>, <code>step(nodeId)</code></td><td>Light up what runs; flash a block its chain reached</td></tr>
+        <tr><td><code>undo()</code>, <code>redo()</code>, <code>copy()</code>, <code>paste()</code>, <code>duplicate()</code>, <code>selectAll()</code></td><td>What the keys do, from code</td></tr>
+        <tr><td><code>addNode()</code>, <code>connect()</code>, <code>addNote()</code>, <code>removeSelected()</code>, <code>fit()</code></td><td>Edit and look from code</td></tr>
+        <tr><td><code>setBlocks()</code>, <code>setChoices()</code>, <code>setReadOnly()</code>, <code>destroy()</code></td><td>Change it later; take it out of the page</td></tr>
+      </table>
+      <h3>For the people using it</h3>
+      <table class="keys">
+        <tr><th>To</th><th>Do</th></tr>
+        <tr><td>Add a block</td><td>Drag it from Blocks, click it there, or click a dot and pick what fits</td></tr>
+        <tr><td>Wire</td><td>Drag from a dot to a dot. The dots that fit light up</td></tr>
+        <tr><td>Do two things at once</td><td>Drag a second wire from the same white dot</td></tr>
+        <tr><td>Select several blocks</td><td>Shift-click them, or Shift-drag a frame. <kbd>Ctrl</kbd> <kbd>A</kbd> selects all</td></tr>
+        <tr><td>Copy, paste, duplicate</td><td><kbd>Ctrl</kbd> <kbd>C</kbd>, <kbd>Ctrl</kbd> <kbd>V</kbd>, <kbd>Ctrl</kbd> <kbd>D</kbd></td></tr>
+        <tr><td>Undo, redo</td><td><kbd>Ctrl</kbd> <kbd>Z</kbd>, <kbd>Ctrl</kbd> <kbd>Shift</kbd> <kbd>Z</kbd></td></tr>
+        <tr><td>Remove</td><td><kbd>Delete</kbd></td></tr>
+        <tr><td>Write on the canvas</td><td>Note, at the bottom left</td></tr>
+        <tr><td>Pan and zoom</td><td>Drag the canvas; wheel or pinch; <kbd>0</kbd> shows everything</td></tr>
+      </table>
+      <h3>The look</h3>
+      <p>Every style sits under the class <code>ng</code>. Set the <code>--ng-*</code> variables to make it yours: <code>--ng-accent</code>, <code>--ng-surface</code>, <code>--ng-ink</code> and the three fonts. Dark follows the system, or <code>data-theme="dark"</code> on any parent.</p>
+    </section>
+
+    <section id="runtime">
+      <h2>The runtime</h2>
+      <p>The same in JavaScript and Python. The JavaScript runtime uses nothing of a page, so it runs in Node.js as well.</p>
+      <table>
+        <tr><th>JavaScript</th><th>Python</th><th>What it does</th></tr>
+        <tr><td><code>defineBlock(spec)</code></td><td>subclass <code>Trigger</code>, <code>Action</code>, <code>Loop</code>, <code>ValueBlock</code></td><td>A block type</td></tr>
+        <tr><td><code>registry(STANDARD, …)</code></td><td>the same</td><td>Block types by kind</td></tr>
+        <tr><td><code>catalogue(registry)</code></td><td>the same</td><td>The block types as the editor wants them</td></tr>
+        <tr><td><code>parse(document)</code></td><td>the same</td><td>A graph from JSON; refuses a malformed one</td></tr>
+        <tr><td><code>check(graph, registry, ctx)</code></td><td>the same</td><td><code>.problems</code>: what is wrong, in words for the user</td></tr>
+        <tr><td><code>new Engine({ context, registry, limits, onEvent, onStatus })</code></td><td><code>Engine(ctx, registry, limits=, on_event=, on_status=)</code></td><td>Runs graphs</td></tr>
+        <tr><td><code>engine.load(graphs)</code></td><td>the same</td><td>Replace the graphs</td></tr>
+        <tr><td><code>engine.activate()</code>, <code>deactivate()</code></td><td>the same</td><td>Start listening; stop everything</td></tr>
+        <tr><td><code>engine.fire(graphId, nodeId)</code></td><td>the same</td><td>Start a chain by hand</td></tr>
+        <tr><td><code>engine.evaluate(graphId, nodeId, dot)</code></td><td>the same</td><td>A value without a chain, for graphs that only calculate</td></tr>
+        <tr><td><code>engine.status()</code></td><td>the same</td><td>What is loaded, valid, listening and running</td></tr>
+      </table>
+      <h3>What the engine guarantees</h3>
+      <ul>
+        <li>Nothing runs unless the engine is active. <code>deactivate()</code> stops every chain and calls your <code>release()</code>, where you return to a safe state.</li>
+        <li>A block that fails ends its own chain and is reported. The engine goes on.</li>
+        <li>A graph with a mistake does not run. <code>check()</code> names every mistake.</li>
+        <li>A graph cannot run away: there are limits for time, steps and nesting, and you set them.</li>
+      </ul>
+<pre><code>new Engine({ context, registry, limits: {
+  maxRunS: 3600,      // longest a chain without a loop may run
+  maxSteps: 10000,    // steps of one way of a chain
+  minRoundS: 0.02,    // shortest round of a loop
+  maxLoopDepth: 8,    // loops inside loops
+  maxCallDepth: 16,   // graphs running graphs
+} });</code></pre>
+    </section>
+
+    <section id="standard">
+      <h2>Standard blocks</h2>
+      <p>Both runtimes come with these. This list is read from the runtime running in this page.</p>
+      <div id="standard-list" class="blocklist"></div>
+    </section>
+
+    <section id="platforms">
+      <h2>Other platforms</h2>
+      <p>Noodlegraph has three layers. The specification is shared; editors and runtimes exist per platform and share no code.</p>
+      <table>
+        <tr><th>Layer</th><th>Today</th><th>To add a platform</th></tr>
+        <tr><td>Specification, <code>spec/</code></td><td>The graph document, how blocks are described, the rules for checking and running, 34 test graphs</td><td></td></tr>
+        <tr><td>Editors, <code>editors/</code></td><td>Web: any browser, or a web view inside a desktop application</td><td>Read and write the graph document; take the block catalogue</td></tr>
+        <tr><td>Runtimes, <code>runtimes/</code></td><td>JavaScript and Python</td><td>Follow <code>spec/SPEC.md</code> and pass <code>spec/tests/</code></td></tr>
+      </table>
+      <p>Because every runtime passes the same test graphs, a graph drawn in any editor runs the same way everywhere.</p>
+    </section>
+
+    <section id="licence">
+      <h2>Licence</h2>
+      <p>Noodlegraph is by Eagle Creative and has two licences.</p>
+      <table>
+        <tr><th>If you</th><th>Use</th></tr>
+        <tr><td>try it, learn or teach with it</td><td>AGPL, free</td></tr>
+        <tr><td>publish the complete source of your software under the AGPL</td><td>AGPL, free</td></tr>
+        <tr><td>ship it in a product or service whose source stays closed</td><td>The commercial licence</td></tr>
+      </table>
+      <p>The texts are in <code>LICENSE</code>, <code>LICENSE.md</code> and <code>COMMERCIAL.md</code> of the project.</p>
+    </section>
+  </main>
+  <script type="module" src="docs.js"></script>
+</body>
+</html>
