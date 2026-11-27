@@ -48,6 +48,29 @@ and runs.
   <img src="docs/images/editor-dark.png" alt="The editor in dark" width="49%">
 </p>
 
+## What you can build with it
+
+- **Animatronics and show control.** Operators build routines that react to sensors and move
+  servos, lights and sound, without writing code. Noodlegraph started as the routine editor of
+  Stagion, a stage and show controller.
+- **Robotics.** People design a robot's behaviour as a graph: when a person is seen, turn the
+  head, then wave.
+- **Home and building automation.** Triggers, conditions and actions for devices, as a friendlier
+  face for rules.
+- **Game and interactive logic.** Designers wire up quests, puzzles or exhibit interactions;
+  developers supply the blocks.
+- **IoT and hardware projects.** The Python runtime runs on a small Linux board next to the
+  hardware.
+- **Teaching.** A first look at programming, with blocks of your own choosing.
+
+## How it works
+
+Noodlegraph is a library, not a platform. Your application defines the blocks: their names,
+their settings and what they do. People wire those blocks into graphs in the editor. A graph is
+saved as plain JSON, and Noodlegraph's engine runs it directly inside your application (in the
+browser, in Node.js or in Python), calling your blocks as the graph says. Nothing is compiled
+and no code is generated, so a changed graph runs straight away.
+
 ## Try it
 
 ```
