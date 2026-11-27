@@ -26,6 +26,3 @@ Price and terms are agreed per product.
 
 Write to Eagle Creative: https://eagle-creative.com
 
-> Note for the maintainer: the terms above are a summary of intent, not a contract. Have the
-> actual commercial agreement drawn up by a lawyer before the first sale, and put a contact
-> address here.

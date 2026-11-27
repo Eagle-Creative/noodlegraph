@@ -5,6 +5,10 @@
 - Themes: the editor's `theme` option and `setTheme()`, with three that come with it (`paper`,
   `slate`, `contrast`) and your own colours and fonts by name. A switch on the documentation
   site to try them.
+- No GitHub Pages workflow any more. The documentation and the demo are plain files: copy the
+  folder to any web server (`index.html` at the top leads to `docs/`).
+- The tests workflow: Node 22 and 24, current actions, and a guide page without a script no
+  longer fails it.
 - The Python demo's start scripts make `.venv` in the project folder and install there, instead
   of installing into the system's Python.
 - `AGENTS.md`: instructions for coding agents that put Noodlegraph into an application, and a
