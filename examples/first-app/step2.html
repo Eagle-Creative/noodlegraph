@@ -1,0 +1,56 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Noodlegraph-Commercial -->
+<!-- Guide, step 3: an engine runs what is drawn. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Noodlegraph guide: make it run</title>
+  <link rel="stylesheet" href="../../editors/web/noodlegraph.css">
+  <link rel="stylesheet" href="page.css">
+</head>
+<body>
+  <header><h1>Make it run</h1><p id="status">Add a Run button block and press its ▶.</p></header>
+  <main><div id="editor"></div></main>
+
+  <script type="module">
+    import { createEditor } from "../../editors/web/noodlegraph.js";
+    import { Engine, STANDARD, catalogue, check, parse, registry } from "../../runtimes/javascript/src/index.js";
+
+    const status = document.querySelector("#status");
+    const say = (text, bad = false) => { status.textContent = text; status.classList.toggle("bad", bad); };
+    const blocks = registry(STANDARD);
+
+    // the engine runs graphs and says what happens
+    const engine = new Engine({
+      registry: blocks,
+      onEvent(graphId, event) {
+        if (event.event === "step") editor.step(event.node);            // flash the block the chain is at
+        if (event.event === "started") say("Running…");
+        if (event.event === "finished") say("Finished.");
+        if (event.event === "failed") say(`Failed: ${event.message}`, true);
+      },
+      onStatus: (s) => editor.setRunning(s.graphs.first?.running ?? []),
+    });
+
+    // every change in the editor goes to the engine: what is drawn is what runs
+    async function load(graph) {
+      const parsed = parse(graph);
+      const problems = check(parsed, blocks).problems;
+      await engine.load([parsed]);
+      if (problems.length) say(`It cannot run yet: ${problems[0]}`, true);
+    }
+
+    const editor = createEditor(document.querySelector("#editor"), {
+      blocks: catalogue(blocks),
+      graph: { id: "first", enabled: true, nodes: [], wires: [] },
+      storageKey: "guide.step2",
+      onChange: load,
+      onRun: (nodeId) => engine.fire("first", nodeId).catch((err) => say(err.message, true)),   // the ▶ on a trigger
+    });
+
+    await load(editor.getGraph());
+    await engine.activate();
+  </script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Noodlegraph-Commercial
 // SPDX-FileCopyrightText: 2026 Eagle Creative
 // The documentation page: a live editor at the top, and the list of standard blocks.
-import { createEditor } from "../editors/web/noodlegraph.js";
+import { THEMES, createEditor } from "../editors/web/noodlegraph.js";
 import { Engine, STANDARD, VERSION, catalogue, check, parse, registry } from "../runtimes/javascript/src/index.js";
 import { CHOICES, DEMO_BLOCKS, Stage } from "../demo/blocks.js";
 
@@ -69,6 +69,18 @@ editor = createEditor($("editor"), {
   onRun: (node) => engine.fire("try", node).catch((err) => { $("state").textContent = err.message; }),
 });
 $("button").addEventListener("click", () => stage.press());
+
+// ---------------------------------------------------------------------- try another palette
+let themeName = "paper", accent = null;
+function showTheme() {
+  const theme = accent ? { ...(THEMES[themeName] ?? {}), accent, light: { ...(THEMES[themeName]?.light ?? {}), accent }, dark: { ...(THEMES[themeName]?.dark ?? {}), accent } } : themeName;
+  editor.setTheme(theme);
+  for (const b of document.querySelectorAll("[data-theme-name]")) b.setAttribute("aria-pressed", String(b.dataset.themeName === themeName));
+  const parts = [themeName === "paper" ? "" : `"${themeName}"`, accent ? `{ accent: "${accent}" }` : ""].filter(Boolean);
+  $("theme-code").textContent = parts.length === 0 ? "createEditor(element, {})" : parts.length === 1 ? `createEditor(element, { theme: ${parts[0]} })` : `createEditor(element, { theme: { ...THEMES.${themeName}, accent: "${accent}" } })`;
+}
+for (const b of document.querySelectorAll("[data-theme-name]")) b.addEventListener("click", () => { themeName = b.dataset.themeName; accent = null; showTheme(); });
+$("accent").addEventListener("input", (ev) => { accent = ev.target.value; showTheme(); });
 await run(GRAPH);
 await engine.activate();
 requestAnimationFrame(() => editor.fit());

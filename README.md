@@ -1,63 +1,93 @@
-<img src="assets/noodlegraph.svg" alt="Noodlegraph" width="372">
+<p align="center">
+  <img src="assets/noodlegraph.svg" alt="Noodlegraph" width="372">
+</p>
 
-A framework for block coding: behaviour built from blocks and the wires ("noodles") between
-them. A trigger block starts a chain of action blocks along the white wires; coloured wires
-carry values into a block's settings. Two white wires from one block: both ways run at the same
-time. The picture is the file: what is drawn is what runs.
+<p align="center">
+  <strong>Block coding for any application.</strong><br>
+  You bring the blocks. Noodlegraph draws the graph, checks it and runs it.
+</p>
 
-It is generic. An application brings its own blocks, value types and settings, and the
-framework knows nothing about what they do. It began as the routines editor of stagion.edge
-(2026-11-27).
+<p align="center">
+  <img alt="Licence: AGPL-3.0 or commercial" src="https://img.shields.io/badge/licence-AGPL--3.0%20or%20commercial-d9591b">
+  <img alt="No dependencies" src="https://img.shields.io/badge/dependencies-none-4f7a2e">
+  <img alt="No build step" src="https://img.shields.io/badge/build%20step-none-4f7a2e">
+  <img alt="Runtimes: JavaScript and Python" src="https://img.shields.io/badge/runtimes-JavaScript%20%C2%B7%20Python-0f6d75">
+</p>
 
-## How it is organised
+<p align="center">
+  <img src="docs/images/demo.gif" alt="Adding two blocks to a running graph: a wire dragged from a block offers what fits, a second wire from the same dot makes two things happen at once" width="860">
+</p>
 
-Three layers. The spec is shared; editors and runtimes exist per platform and are all built
-against the spec, so a graph drawn in any editor runs the same way on any runtime.
+<p align="center">
+  <a href="docs/GUIDE.md"><strong>Step-by-step guide</strong></a> ·
+  <a href="docs/index.html">Documentation</a> ·
+  <a href="demo/">Demo</a> ·
+  <a href="spec/SPEC.md">Specification</a> ·
+  <a href="CHANGELOG.md">Changelog</a>
+</p>
 
-| Layer | Folder | What it is | Platforms today |
-|---|---|---|---|
-| **Spec** | `spec/` | The graph file, the block catalogue, the rules for checking and running, and test graphs every runtime must pass | one, for all |
-| **Editors** | `editors/` | What draws a graph | `web`: any browser or web view |
-| **Runtimes** | `runtimes/` | What checks and runs a graph | `javascript`: browser, Node.js. `python`: Python 3.11+ |
+## What it is
 
-The first version targets the browser: the web editor and the JavaScript runtime together are
-a complete block coding tool in one page, with no server. The Python runtime runs the same
-graphs outside a browser.
+A trigger block starts a chain of blocks along the white wires. Coloured wires ("noodles")
+carry values into a block's settings. Two white wires from one block run at the same time. The
+picture is the file: what is drawn is what runs.
 
-```
-spec/SPEC.md                    the specification
-spec/*.schema.json              JSON Schemas of the graph file and the block catalogue
-spec/tests/                     test graphs with what must happen
-editors/web/                    noodlegraph.js (createEditor), panzoom.js, noodlegraph.css
-runtimes/javascript/src/        index.js (Engine, defineBlock, STANDARD, check, parse, ...)
-runtimes/python/src/noodlegraph the same in Python
-demo/                           a small host application, all in the browser
-docs/                           the documentation site (open docs/ the same way as demo/)
-runtimes/python/demo/           the same host with the engine in a Python process
-```
+Noodlegraph knows nothing about what your blocks do. Lamps, motors, sounds, orders, game
+characters: you describe a block in a dozen lines and it appears in the editor, gets checked
+and runs.
 
-Neither editor nor runtime has dependencies or a build step (the Python runtime needs
-pydantic and PyYAML).
+| | |
+|---|---|
+| **An editor people enjoy** | Dots that fit light up while you drag a wire. Click a dot and pick what comes next. Undo, copy and paste, several blocks at once, notes on the canvas, light and dark. |
+| **An engine you can trust** | A graph with a mistake does not run, and the mistake is named in plain words. A failing block ends its own chain, never the engine. Stop means stop. |
+| **Nothing to install** | Plain JavaScript modules and one CSS file. No dependencies, no build step, no server: the whole thing runs in a page. |
+| **Not tied to a platform** | A written specification and shared test graphs keep every runtime the same. JavaScript and Python today. |
 
-Free under the AGPL, or under a commercial licence for closed-source products: see
-[Licence](#licence).
+<p align="center">
+  <img src="docs/images/editor.png" alt="The editor in light" width="49%">
+  <img src="docs/images/editor-dark.png" alt="The editor in dark" width="49%">
+</p>
 
 ## Try it
 
-Double-click `demo\start.bat` (Windows), or:
+```
+./start.sh              # macOS, Linux
+start.bat               # Windows: double-click it
+```
+
+That serves this folder and opens the documentation, which starts with a live editor. The demo
+is at `/demo/`. The scripts need Python only to serve files; any static web server does the
+same (`npx serve`, `python -m http.server`).
+
+**New here?** The [step-by-step guide](docs/GUIDE.md) goes from nothing to your own block
+running in your own page, with a short film for each step.
+
+The demo is a small application around Noodlegraph: a stage with two lamps, a pointer, a button
+and a slider, and five blocks of its own. Press **Button** on the stage, or ▶ on a trigger block.
+Change the graph, press **Save**, and the new graph runs.
+
+## How it is organised
+
+Three layers. The specification is shared; editors and runtimes exist per platform and are all
+built against it, so a graph drawn in any editor runs the same way on any runtime.
+
+| Layer | Folder | What it is | Platforms today |
+|---|---|---|---|
+| **Specification** | `spec/` | The graph file, the block catalogue, the rules for checking and running, and test graphs every runtime must pass | one, for all |
+| **Editors** | `editors/` | What draws a graph | `web`: any browser or web view |
+| **Runtimes** | `runtimes/` | What checks and runs a graph | `javascript`: browser, Node.js. `python`: Python 3.11+ |
 
 ```
-python -m http.server 8760          # in this folder; any static web server will do
+spec/                    the specification, JSON Schemas, test graphs
+editors/web/             noodlegraph.js (createEditor), panzoom.js, noodlegraph.css
+runtimes/javascript/     Engine, defineBlock, STANDARD, check, parse, catalogue
+runtimes/python/         the same in Python (needs pydantic and PyYAML)
+demo/                    a small application, all in the browser
+examples/first-app/      the pages of the step-by-step guide
+docs/                    the documentation site
 ```
 
-and open `http://localhost:8760/demo/`. Python only serves the files here; everything runs in
-the page.
-
-The demo is a host in small: a stage with two lamps, a pointer, a button and a slider, and five
-blocks of its own next to the standard ones. Press **Button** on the stage, or ▶ on a trigger
-block. Change the graph, press **Save**, and the new graph runs.
-
-## Using it in an application (browser)
+## Using it in an application
 
 ```html
 <link rel="stylesheet" href="editors/web/noodlegraph.css">
@@ -96,6 +126,20 @@ block. Change the graph, press **Save**, and the new graph runs.
 ```
 
 `demo/demo.js` is this with a name field, Save, an Active switch, Import and Export.
+
+### With a coding agent
+
+[`AGENTS.md`](AGENTS.md) is written for coding agents (Claude Code, Cursor, Copilot and the
+like): what to copy, working code, the rules for blocks, and a list to check the result against.
+Put this repository where the agent can read it and say:
+
+```text
+Read AGENTS.md in the noodlegraph folder and follow Part 1 to put Noodlegraph into this
+application. People should be able to draw graphs that <what graphs should do>.
+Make blocks for: <the actions, triggers and values of the application>.
+Graphs run <in the browser | in Node.js | in Python> and are kept <where>.
+Go through "Check your work" at the end and tell me which points you could not check.
+```
 
 ## Custom blocks
 
@@ -191,8 +235,31 @@ The handle it returns: `getGraph()`, `setGraph(graph)`, `setBlocks()`, `setChoic
 
 The handle also has `undo()`, `redo()`, `copy()`, `paste()`, `duplicate()` and `selectAll()`.
 
-The editor has no Save button, name field or list of graphs: those belong to the host. Its look
-is set with `--ng-*` CSS variables; dark follows the system or `data-theme`.
+The handle also has `setTheme(theme)`.
+
+The editor has no Save button, name field or list of graphs: those belong to the host.
+
+### Colours and fonts
+
+Give the editor a `theme`: the name of one that comes with it (`"paper"`, `"slate"`,
+`"contrast"`) or your own colours. Whatever you leave out keeps its look.
+
+```js
+createEditor(element, { theme: "slate" });
+createEditor(element, { theme: { accent: "#2f6fed" } });
+createEditor(element, { theme: {
+  fontBody: "Inter, sans-serif",
+  light: { accent: "#2f6fed", canvas: "#eef2f7" },
+  dark:  { accent: "#6ea3ff", canvas: "#10151c" },
+} });
+editor.setTheme("contrast");
+```
+
+The names: `accent`, `onAccent`, `surface`, `canvas`, `ink`, `inkSoft`, `inkFaint`, `line`,
+`lineStrong`, `action`, `value`, `logic`, `text`, `danger`, `fontDisplay`, `fontBody`,
+`fontMono` (`THEME_VARIABLES` in `noodlegraph.js` says what each one colours). Dark follows the
+system, or `data-theme="dark"` / `"light"` on the editor's element or a parent. Under it all are
+`--ng-*` CSS variables, if you would rather set those in a style sheet.
 
 ### In the editor
 

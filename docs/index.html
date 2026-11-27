@@ -47,6 +47,14 @@
           <p class="stage-note" id="state">This graph is running in your browser. Press Button, then change the graph: it runs as you edit.</p>
         </aside>
       </div>
+      <div class="palette" role="group" aria-label="Try another palette on the editor">
+        <span>Its colours are yours to set:</span>
+        <button type="button" data-theme-name="paper" aria-pressed="true">Paper</button>
+        <button type="button" data-theme-name="slate" aria-pressed="false">Slate</button>
+        <button type="button" data-theme-name="contrast" aria-pressed="false">Contrast</button>
+        <label>Accent <input type="color" id="accent" value="#d9591b"></label>
+        <code id="theme-code">createEditor(element, {})</code>
+      </div>
     </header>
 
     <section id="start">
@@ -86,7 +94,7 @@
   await engine.load([parse(editor.getGraph())]);
   await engine.activate();
 &lt;/script&gt;</code></pre>
-      <p>The folder <code>demo/</code> is this with a name field, Save, an on and off switch, Import and Export.</p>
+      <p>The folder <code>demo/</code> is this with a name field, Save, an on and off switch, Import and Export. The <a href="GUIDE.md">step-by-step guide</a> builds it up in five steps, with a page for each in <a href="../examples/first-app/"><code>examples/first-app/</code></a>.</p>
     </section>
 
     <section id="idea">
@@ -193,6 +201,7 @@ createEditor(element, {
         <tr><td><code>blocks</code>, <code>graph</code></td><td>The block types (<code>catalogue(registry)</code>) and the document to edit</td></tr>
         <tr><td><code>readOnly</code></td><td>Look, select and pan, but change nothing</td></tr>
         <tr><td><code>choices</code>, <code>fields</code></td><td>What settings of your own kinds offer, or how you draw them</td></tr>
+        <tr><td><code>theme</code></td><td>Colours and fonts: see <a href="#theme">below</a></td></tr>
         <tr><td><code>types</code>, <code>categories</code></td><td>Colours and names of your own value types and block groups</td></tr>
         <tr><td><code>text</code></td><td>Any word the editor shows: another language, other terms</td></tr>
         <tr><td><code>storageKey</code></td><td>Where the browser remembers zoom and folded groups</td></tr>
@@ -219,8 +228,29 @@ createEditor(element, {
         <tr><td>Write on the canvas</td><td>Note, at the bottom left</td></tr>
         <tr><td>Pan and zoom</td><td>Drag the canvas; wheel or pinch; <kbd>0</kbd> shows everything</td></tr>
       </table>
-      <h3>The look</h3>
-      <p>Every style sits under the class <code>ng</code>. Set the <code>--ng-*</code> variables to make it yours: <code>--ng-accent</code>, <code>--ng-surface</code>, <code>--ng-ink</code> and the three fonts. Dark follows the system, or <code>data-theme="dark"</code> on any parent.</p>
+      <h3 id="theme">Colours and fonts</h3>
+      <p>Give the editor a <code>theme</code>: the name of one that comes with it, or your own colours. Whatever you leave out keeps its look. Try it on the editor at the top of this page.</p>
+<pre><code>createEditor(element, { theme: "slate" });                    // "paper", "slate" or "contrast"
+
+createEditor(element, { theme: { accent: "#2f6fed" } });      // one colour of your own
+
+createEditor(element, { theme: {                              // different in light and dark
+  fontBody: "Inter, sans-serif",
+  light: { accent: "#2f6fed", canvas: "#eef2f7" },
+  dark:  { accent: "#6ea3ff", canvas: "#10151c" },
+} });
+
+editor.setTheme("contrast");                                  // change it later</code></pre>
+      <table>
+        <tr><th>Name</th><th>What it colours</th></tr>
+        <tr><td><code>accent</code>, <code>onAccent</code></td><td>Selection, trigger blocks, colour values, the main buttons; the text on those buttons</td></tr>
+        <tr><td><code>surface</code>, <code>canvas</code></td><td>Blocks and panels; the canvas and input fields</td></tr>
+        <tr><td><code>ink</code>, <code>inkSoft</code>, <code>inkFaint</code></td><td>Text; secondary text and the white wires; hints</td></tr>
+        <tr><td><code>line</code>, <code>lineStrong</code></td><td>Thin lines and the dots of the canvas; the edge of blocks and panels</td></tr>
+        <tr><td><code>action</code>, <code>value</code>, <code>logic</code>, <code>text</code></td><td>Action blocks and numbers; value blocks and yes / no; logic blocks and notes; text values</td></tr>
+        <tr><td><code>fontDisplay</code>, <code>fontBody</code>, <code>fontMono</code></td><td>Headings and buttons; everything else; input fields</td></tr>
+      </table>
+      <p>Dark follows the system, or <code>data-theme="dark"</code> (or <code>"light"</code>) on the editor's element or any parent. Under it all are CSS variables (<code>--ng-accent</code> and so on, under the class <code>ng</code>), if you would rather set those in your own style sheet.</p>
     </section>
 
     <section id="runtime">

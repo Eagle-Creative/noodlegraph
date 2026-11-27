@@ -11,4 +11,4 @@ export { Cancelled, Context, Engine, GraphError, LIMITS } from "./engine.js";
 export { Compiled, GraphFileError, MAX_NODES, SCHEMA, check, dump, parse, upgrade } from "./graph.js";
 export { STANDARD, nth } from "./standard.js";
 
-export const VERSION = "0.4.0";
+export const VERSION = "0.5.0";

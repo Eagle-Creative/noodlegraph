@@ -1,2 +1,14 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# scripts keep the line endings their shell needs
+*.sh  text eol=lf
+*.bat text eol=crlf
+
+*.png binary
+*.gif binary
+
+# what GitHub counts as the project's languages
+spec/tests/*.json linguist-generated
+runtimes/python/demo/catalogue.json linguist-generated
+docs/** linguist-documentation

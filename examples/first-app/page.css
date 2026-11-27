@@ -1,0 +1,16 @@
+/* SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Noodlegraph-Commercial */
+/* The little page around the editor in the guide's examples. Nothing here is needed by Noodlegraph. */
+html, body { height: 100%; }
+body { margin: 0; display: flex; flex-direction: column; gap: .7rem; padding: .9rem; box-sizing: border-box; background: #f6f4ef; color: #211d17; font: 15px/1.5 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem 1rem; }
+h1 { margin: 0; font-size: 1.15rem; }
+header p { margin: 0; color: #574f43; }
+main { flex: 1; min-height: 0; display: flex; gap: .8rem; }
+#editor { flex: 1; min-width: 0; }
+aside { width: 11rem; display: flex; flex-direction: column; align-items: center; gap: .6rem; padding: 1rem; border: 1px solid #ddd6c7; border-radius: 6px; background: #fffefb; }
+#lamp { width: 5rem; height: 5rem; border-radius: 50%; border: 2px solid #ddd6c7; background: #000; transition: background .2s, box-shadow .2s; }
+#status { margin: 0; min-height: 1.5rem; font-size: .9rem; color: #574f43; }
+#status.bad { color: #b52a1b; }
+@media (prefers-color-scheme: dark) {
+  body { background: #14120f; color: #ece5d8; } header p, #status { color: #b4a993; } aside { background: #1d1a15; border-color: #322d24; } #lamp { border-color: #322d24; }
+}

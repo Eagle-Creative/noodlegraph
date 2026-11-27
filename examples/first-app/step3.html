@@ -1,0 +1,88 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Noodlegraph-Commercial -->
+<!-- Guide, steps 4 and 5: a block of your own, and the graph kept between visits. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Noodlegraph guide: your own block</title>
+  <link rel="stylesheet" href="../../editors/web/noodlegraph.css">
+  <link rel="stylesheet" href="page.css">
+</head>
+<body>
+  <header><h1>Your own block</h1><p id="status">"Set lamp" is in Actions. It is this page's own block.</p></header>
+  <main>
+    <div id="editor"></div>
+    <aside><div id="lamp"></div><span>The lamp</span></aside>
+  </main>
+
+  <script type="module">
+    import { createEditor } from "../../editors/web/noodlegraph.js";
+    import { Context, Engine, STANDARD, catalogue, check, defineBlock, parse, registry } from "../../runtimes/javascript/src/index.js";
+
+    const status = document.querySelector("#status");
+    const say = (text, bad = false) => { status.textContent = text; status.classList.toggle("bad", bad); };
+
+    // 1. Your application, as blocks see it
+    class Page extends Context {
+      setLamp([r, g, b]) {
+        const lamp = document.querySelector("#lamp");
+        lamp.style.background = `rgb(${r}, ${g}, ${b})`;
+        lamp.style.boxShadow = r + g + b ? `0 0 26px 4px rgb(${r}, ${g}, ${b})` : "none";
+      }
+      async release() { this.setLamp([0, 0, 0]); }           // the engine was stopped: lamp off
+    }
+
+    // 2. A block of your own: what the editor draws, and what the engine runs
+    const SetLamp = defineBlock({
+      role: "action", kind: "set_lamp", title: "Set lamp",
+      help: "Gives the lamp a colour. Black is off.",
+      inputs: [{ name: "in", type: "flow" }, { name: "colour", type: "colour" }],
+      fields: [{ name: "colour", kind: "colour", default: "#ff8800" }],
+      run({ ctx, inputs }) {
+        ctx.setLamp(inputs.colour);                          // colours arrive as [red, green, blue]
+        return "out";                                        // continue on the dot called "out"
+      },
+    });
+
+    // 3. Engine and editor get the same block types
+    const blocks = registry(STANDARD, SetLamp);
+    const engine = new Engine({
+      context: new Page(), registry: blocks,
+      onEvent(graphId, event) {
+        if (event.event === "step") editor.step(event.node);
+        if (event.event === "finished") say("Finished.");
+        if (event.event === "failed") say(`Failed: ${event.message}`, true);
+      },
+      onStatus: (s) => editor.setRunning(s.graphs.first?.running ?? []),
+    });
+
+    // 4. Keep the graph: here in the browser; in a real application, wherever you keep things
+    const KEY = "guide.step3.graph";
+    const kept = () => { try { return parse(localStorage.getItem(KEY) ?? ""); } catch { return null; } };
+
+    async function load(graph) {
+      const parsed = parse(graph);
+      const problems = check(parsed, blocks, engine.ctx).problems;
+      await engine.load([parsed]);
+      localStorage.setItem(KEY, JSON.stringify(parsed));
+      if (problems.length) say(`It cannot run yet: ${problems[0]}`, true);
+    }
+
+    const editor = createEditor(document.querySelector("#editor"), {
+      blocks: catalogue(blocks),
+      graph: kept() ?? { id: "first", enabled: true, nodes: [], wires: [] },
+      storageKey: "guide.step3",
+      onChange: load,
+      onRun: (nodeId) => engine.fire("first", nodeId).catch((err) => say(err.message, true)),
+    });
+
+    await load(editor.getGraph());
+    await engine.activate();
+    if (kept()?.nodes.length) {
+      say("Welcome back: this is the graph you drew.");
+      requestAnimationFrame(() => editor.fit());             // show all of it
+    }
+  </script>
+</body>
+</html>

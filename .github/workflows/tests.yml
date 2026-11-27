@@ -1,0 +1,77 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  javascript:
+    name: JavaScript runtime (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Run the tests, the shared test graphs included
+        working-directory: runtimes/javascript
+        run: npm test
+      - name: The editor and the demos are valid JavaScript
+        run: |
+          for file in editors/web/*.js demo/*.js docs/*.js runtimes/python/demo/*.js; do
+            node --check "$file"
+          done
+      - name: The pages of the guide are valid JavaScript
+        run: |
+          for page in examples/first-app/*.html; do
+            python3 -c "import re,sys; print(re.search(r'<script type=\"module\">(.*?)</script>', open(sys.argv[1]).read(), re.S).group(1))" "$page" > /tmp/page.mjs
+            node --check /tmp/page.mjs
+          done
+
+  python:
+    name: Python runtime (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install the runtime
+        run: pip install -e "runtimes/python[dev]" ruff
+      - name: Lint
+        run: ruff check --select F,E,W --ignore E501,E402 runtimes/python
+      - name: Run the tests, the shared test graphs included
+        run: python -m pytest runtimes/python
+
+  spec:
+    name: Spec (schemas and test graphs agree)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install jsonschema
+      - name: Every test graph and the standard catalogue fit their schema
+        run: |
+          python - <<'PY'
+          import json, jsonschema
+          graph = json.load(open("spec/graph.schema.json"))
+          catalogue = json.load(open("spec/catalogue.schema.json"))
+          jsonschema.Draft202012Validator.check_schema(graph)
+          jsonschema.Draft202012Validator.check_schema(catalogue)
+          jsonschema.validate(json.load(open("spec/tests/standard-catalogue.json")), catalogue)
+          cases = json.load(open("spec/tests/cases.json"))["cases"]
+          for case in cases:
+              for g in [case["graph"], *case.get("with", [])]:
+                  jsonschema.validate(g, graph)
+          jsonschema.validate(json.load(open("demo/example.json")), graph)
+          print(f"{len(cases)} test graphs fit the schema")
+          PY

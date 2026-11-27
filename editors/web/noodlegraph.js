@@ -130,6 +130,51 @@ export const TEXT = {
   zoomLabel: "Zoom",
 };
 
+/**
+ * The colours and fonts a theme may set, and the CSS variable each one is. A theme is an
+ * object with any of these names; with `light` and `dark` inside it says something different
+ * for each. Everything left out keeps the look the editor came with.
+ *
+ *   createEditor(element, { theme: { accent: "#2f6fed" } });
+ *   createEditor(element, { theme: "slate" });
+ *   editor.setTheme({ light: { canvas: "#f4f7fb" }, dark: { canvas: "#0f141b" } });
+ */
+export const THEME_VARIABLES = {
+  accent: "--ng-accent",            // selection, triggers, colour values, the main buttons
+  accentInk: "--ng-accent-ink",     // the accent for small things on a light ground (the run arrow)
+  onAccent: "--ng-on-accent",       // text on the accent (the main buttons); white if left out
+  surface: "--ng-surface",          // blocks, panels
+  canvas: "--ng-surface-sunk",      // the canvas, input fields
+  ink: "--ng-ink",                  // text
+  inkSoft: "--ng-ink-soft",         // secondary text, flow wires and dots
+  inkFaint: "--ng-ink-faint",       // hints
+  line: "--ng-rule",                // thin lines, the dots of the canvas
+  lineStrong: "--ng-rule-strong",   // the edge of blocks and panels
+  action: "--ng-cyan",              // action blocks, number values
+  value: "--ng-good",               // value blocks, yes / no values
+  logic: "--ng-warn",               // logic blocks, notes
+  text: "--ng-violet",              // text values
+  danger: "--ng-danger",            // unknown blocks, the notice border
+  dangerInk: "--ng-danger-ink",     // the notice text
+  shadow: "--ng-shadow",            // a whole box-shadow
+  fontDisplay: "--ng-font-display", // headings and buttons
+  fontBody: "--ng-font-body",       // everything else
+  fontMono: "--ng-font-mono",       // input fields, ids
+};
+
+/** Looks that come with the editor. "paper" is the one it has without a theme. */
+export const THEMES = {
+  paper: {},
+  slate: {
+    light: { surface: "#ffffff", canvas: "#eef2f7", ink: "#17202b", inkSoft: "#465466", inkFaint: "#7a8796", line: "#d5dde7", lineStrong: "#bcc8d6", accent: "#2f6fed", accentInk: "#1f52bf", action: "#0b7a75", value: "#3f7d2f", logic: "#a16207", text: "#7046c0" },
+    dark: { surface: "#1a212b", canvas: "#10151c", ink: "#e7ecf3", inkSoft: "#a8b4c3", inkFaint: "#74808e", line: "#27313e", lineStrong: "#394656", accent: "#6ea3ff", accentInk: "#9dc0ff", onAccent: "#0b1220", action: "#3fb8b0", value: "#8cc46a", logic: "#e2b34f", text: "#b197ee" },
+  },
+  contrast: {
+    light: { surface: "#ffffff", canvas: "#f2f2f2", ink: "#000000", inkSoft: "#222222", inkFaint: "#555555", line: "#bdbdbd", lineStrong: "#6b6b6b", accent: "#c2410c", accentInk: "#9a3412", action: "#005f8a", value: "#256d1b", logic: "#8a5200", text: "#5b21b6" },
+    dark: { surface: "#0a0a0a", canvas: "#000000", ink: "#ffffff", inkSoft: "#e0e0e0", inkFaint: "#a8a8a8", line: "#4a4a4a", lineStrong: "#8c8c8c", accent: "#ff8a4c", accentInk: "#ffb48a", onAccent: "#000000", action: "#5cc8f0", value: "#8fe07f", logic: "#ffc857", text: "#c4a5ff" },
+  },
+};
+
 /** A free id from *prefix* ("Wait" -> wait, wait2, ...), given the ids already *taken*. */
 export function freeId(prefix, taken, fallback = "graph") {
   const stem = String(prefix).toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 30) || fallback;
@@ -157,6 +202,8 @@ export function emptyGraph(id = "graph", name = "New graph") {
  *   fields       { fieldKind: ({ node, field, value, set, disabled }) => Element }: a setting
  *                drawn by the host
  *   quiet        setting names left out of a block's summary line
+ *   theme        colours and fonts: a name of THEMES ("slate"), or an object with any of
+ *                THEME_VARIABLES ({ accent: "#2f6fed" }), optionally per `light` and `dark`
  *   storageKey   name under which this browser remembers zoom and folded groups
  *   text         other wording: any entry of TEXT in this file (another language, other terms)
  *   onChange(graph), onSelect(selection), onRun(nodeId)
@@ -205,6 +252,27 @@ export function createEditor(root, options = {}) {
   root.classList.add("ng");
   root.replaceChildren(palette, canvas, inspector);
   const $ = (sel) => root.querySelector(sel);
+
+  // ------------------------------------------------------------------ theme
+  let theme = o.theme ?? null;
+  /** Whether the editor shows dark right now: a `data-theme` on it or a parent says so, else the system. */
+  const isDark = () => {
+    const forced = root.closest("[data-theme]")?.dataset.theme;
+    return forced ? forced === "dark" : Boolean(globalThis.matchMedia?.("(prefers-color-scheme: dark)").matches);
+  };
+  function applyTheme() {
+    for (const name of Object.values(THEME_VARIABLES)) root.style.removeProperty(name);
+    const chosen = typeof theme === "string" ? THEMES[theme] : theme;
+    if (!chosen) return;
+    const now = { ...chosen, ...((isDark() ? chosen.dark : chosen.light) ?? {}) };
+    for (const [key, value] of Object.entries(now)) if (THEME_VARIABLES[key] && typeof value === "string") root.style.setProperty(THEME_VARIABLES[key], value);
+  }
+  applyTheme();
+  // light and dark may differ in a theme: follow the system and a `data-theme` that changes
+  const scheme = globalThis.matchMedia?.("(prefers-color-scheme: dark)");
+  scheme?.addEventListener?.("change", applyTheme);
+  const themeWatch = typeof MutationObserver === "function" ? new MutationObserver(applyTheme) : null;
+  themeWatch?.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"], subtree: true });
 
   // ------------------------------------------------------------------ data
   const canEdit = () => !r.readOnly && r.doc !== null;
@@ -386,8 +454,20 @@ export function createEditor(root, options = {}) {
     render();
     const p = anchorPoint(node.id, s.port.name, from.dir === "out" ? "in" : "out");  // line its dot up with the point
     if (p) { node.position = [Math.round(node.position[0] + at.x - p.x), Math.round(node.position[1] + at.y - p.y)]; render(); }
+    reveal(node.id);
     changed();
     o.onSelect?.(r.selected);
+  }
+
+  /** Move the view just far enough that this block is on the canvas. */
+  function reveal(nodeId) {
+    const box = nodes.querySelector(`.ng-node[data-node="${CSS.escape(nodeId)}"]`);
+    if (!box) return;
+    const b = box.getBoundingClientRect(), c = canvas.getBoundingClientRect(), pad = 20;
+    const right = c.right - pad, bottom = c.bottom - 56;  // the buttons at the bottom
+    const dx = b.right > right ? right - b.right : b.left < c.left + pad ? c.left + pad - b.left : 0;
+    const dy = b.bottom > bottom ? bottom - b.bottom : b.top < c.top + pad ? c.top + pad - b.top : 0;
+    if (dx || dy) { const v = pz.view; pz.set({ x: v.x + dx, y: v.y + dy }); }
   }
 
   let menu = null;  // the open suggestions: { box }
@@ -1041,6 +1121,8 @@ export function createEditor(root, options = {}) {
     /** What the settings of the host's own kinds offer: see the `choices` option. */
     setChoices: (choices) => { r.choices = choices ?? {}; render(); },
     setReadOnly: (on) => { r.readOnly = Boolean(on); closeSuggest(); render(); showTools(); },
+    /** Change colours and fonts: a name of THEMES, an object of THEME_VARIABLES, or null for the look it came with. */
+    setTheme: (next) => { theme = next ?? null; applyTheme(); },
     get readOnly() { return r.readOnly; },
     /** Light up the blocks whose chain runs now (ids of nodes; none: []). */
     setRunning(ids) {
@@ -1083,6 +1165,9 @@ export function createEditor(root, options = {}) {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("resize", redraw);
       sizes?.disconnect();
+      scheme?.removeEventListener?.("change", applyTheme);
+      themeWatch?.disconnect();
+      for (const name of Object.values(THEME_VARIABLES)) root.style.removeProperty(name);
       pz.detach();
       root.replaceChildren();
       root.classList.remove("ng");

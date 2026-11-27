@@ -1,0 +1,29 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: AGPL-3.0-or-later OR LicenseRef-Noodlegraph-Commercial -->
+<!-- Guide, step 2: the editor on a page. Nothing runs yet. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Noodlegraph guide: the editor on a page</title>
+  <link rel="stylesheet" href="../../editors/web/noodlegraph.css">
+  <link rel="stylesheet" href="page.css">
+</head>
+<body>
+  <header><h1>The editor on a page</h1><p>You can draw. Nothing runs yet.</p></header>
+  <main><div id="editor"></div></main>
+
+  <script type="module">
+    import { createEditor } from "../../editors/web/noodlegraph.js";
+    import { STANDARD, catalogue, registry } from "../../runtimes/javascript/src/index.js";
+
+    const blocks = registry(STANDARD);                       // the block types people may use
+
+    createEditor(document.querySelector("#editor"), {
+      blocks: catalogue(blocks),                             // ... described for the editor
+      graph: { id: "first", enabled: true, nodes: [], wires: [] },
+      storageKey: "guide.step1",
+    });
+  </script>
+</body>
+</html>

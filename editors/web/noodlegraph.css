@@ -4,9 +4,9 @@
  * noodlegraph — the look of the editor (noodlegraph.js). Everything lives under the editor's
  * root element (class "ng") and carries the prefix "ng-", so it does not meet a host's styles.
  *
- * To restyle it, set the --ng-* variables on the root (or any parent): paper / ink neutrals,
- * an accent, and one colour per value type and block group. Dark follows the system, or
- * data-theme="dark" / "light" on the root or any parent.
+ * To restyle it, give the editor a theme (createEditor's `theme` option, or setTheme: see
+ * THEME_VARIABLES in noodlegraph.js), or set the --ng-* variables yourself on the root or any
+ * parent. Dark follows the system, or data-theme="dark" / "light" on the root or any parent.
  */
 .ng {
   color-scheme: light;
@@ -79,7 +79,7 @@
   border-radius: 4px;
   padding: .35rem .9rem;
 }
-.ng-btn-primary { background: var(--ng-accent); color: #fff; border: 1px solid var(--ng-accent); }
+.ng-btn-primary { background: var(--ng-accent); color: var(--ng-on-accent, #fff); border: 1px solid var(--ng-accent); }
 .ng-btn-primary:hover:not(:disabled) { background: var(--ng-accent-ink); border-color: var(--ng-accent-ink); }
 .ng-btn-quiet { background: transparent; color: var(--ng-ink-soft); border: 1px solid var(--ng-rule-strong); }
 .ng-btn-quiet:hover:not(:disabled) { color: var(--ng-ink); border-color: var(--ng-ink-soft); }
@@ -172,6 +172,7 @@
 .ng-palette { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--ng-rule); background: var(--ng-surface); }
 .ng-palette[data-open="true"] { width: 15rem; }
 .ng-palette[hidden] { display: none; }
+.ng-palette[data-open="false"] { width: 2.3rem; }
 /* folded: a narrow tab with the word running down */
 .ng-palette[data-open="false"] .ng-drawer-toggle { flex: 1; flex-direction: column; justify-content: flex-start; padding: .7rem .4rem; writing-mode: vertical-rl; }
 .ng-palette[data-open="false"] .ng-drawer-arrow { writing-mode: horizontal-tb; }

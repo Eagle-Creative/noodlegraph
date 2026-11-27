@@ -32,7 +32,7 @@ from noodlegraph.model import SCHEMA, Graph, Node, Wire
 from noodlegraph.standard import STANDARD, TaskTrigger, nth, ui
 from noodlegraph.store import GraphFileError, GraphStore, dump, parse, parse_text
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 __all__ = [
     "SCHEMA",
